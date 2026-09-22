@@ -1,17 +1,32 @@
 using UnityEngine;
-using System.Collections;
+using UnityEngine.InputSystem;
 
 public class MosquitoSpawner : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField]
+    private GameObject mosquitoPrefab;
+
+    // temporary test hook
+    private void Update()
     {
-        
+        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            SpawnMosquito();
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SpawnMosquito()
     {
-        
+        if (mosquitoPrefab == null)
+        {
+            Debug.LogWarning("Mosquito prefab is not assigned.", this);
+            return;
+        }
+
+        Instantiate(
+            mosquitoPrefab,
+            transform.position,
+            transform.rotation
+        );
     }
 }
