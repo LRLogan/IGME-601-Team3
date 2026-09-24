@@ -1,10 +1,11 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Traps", menuName = "Scriptable Objects/Traps")]
-public class Traps : ScriptableObject
+public class Traps : MonoBehaviour
 {
     [SerializeField]
-    private string name;
+    protected string name;
     [SerializeField]
-    private float radius;
+    protected float radius;
+    [SerializeField]
+    protected float strength;
 }
