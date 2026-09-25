@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3350705749213311789}
   - component: {fileID: 4117619365594684685}
   - component: {fileID: 1796104908579323214}
-  - component: {fileID: 8306112991969659817}
   m_Layer: 0
   m_Name: Fan
   m_TagString: Untagged
@@ -114,22 +113,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8306112991969659817
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2998524302877435491}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c59ea600bc7602a46acdc945dc5c95c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Fan
-  name: Fan
-  radius: 5
-  strength: 0
-  hitbox: {fileID: 1796104908579323214}
 --- !u!1 &3319321713842284559
 GameObject:
   m_ObjectHideFlags: 0
