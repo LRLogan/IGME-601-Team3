@@ -1,35 +1,43 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
-public class Fan : Traps
+public class Fan : MonoBehaviour 
 {
+    private string itemName;
+    private float radius;
+    private float strength;
+
     [SerializeField]
     BoxCollider hitbox;
-    
-    void Start()
+
+    Rigidbody mosquitoRb;
+
+    public void Start()
     {
-        name = "fan";
+        itemName = "fan";
         radius = 15.0f;
         strength = 1f;
-        //Change length fan can hit to radius size
+
+        //Change length of fan hitbox to radius size
         hitbox.size = new Vector3(radius, 1,1);
         hitbox.center = new Vector3(radius/2 ,0,0);
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Mosquito"));
         {
-            Rigidbody mosquitoRb = other.GetComponent<Rigidbody>();
+            mosquitoRb = other.GetComponent<Rigidbody>();
             Push(mosquitoRb);
 
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    public void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Mosquito"));
         {
-            other.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+            mosquitoRb.linearVelocity = Vector3.zero;
         }
     }
     /// <summary>
@@ -39,7 +47,7 @@ public class Fan : Traps
     public void Push(Rigidbody rb)
     {
         //Get the correct push direction away from the fan
-        Vector3 direction = transform.right;
+        Vector3 direction = Vector3.forward;
         direction = Vector3.Normalize(direction);
 
         rb.AddForce(direction*strength, ForceMode.Impulse);
