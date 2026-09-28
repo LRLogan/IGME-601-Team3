@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Mosquito
+  - CinemachineTarget
   layers:
   - Default
   - TransparentFX
@@ -15,6 +16,9 @@ TagManager:
   - Ground
   - Enviorment
   - AI
+  - PlacementSurface
+  - 
+  - 
   - 
   - 
   - 
