@@ -14,6 +14,15 @@ public class Candle : MonoBehaviour
     // Record the already repelled mosquito, do not repel them a second time until they are completely out of range 
     private HashSet<UVTestMosquito> repelledMosquito = new HashSet<UVTestMosquito>();
 
+    // Make the mosquito to turn around any axis
+    public enum TurnAxis
+    {
+        X,
+        Y,
+        Z
+    }
+    [SerializeField] private TurnAxis turnAxis = TurnAxis.X;
+
     // Update is called once per frame
     void Update()
     {
@@ -61,10 +70,22 @@ public class Candle : MonoBehaviour
         {
             return;
         }
-        // Set a upward turn along x axis and turn the mosquito
-        Vector3 angles = body.rotation.eulerAngles;
-        angles.x -= deflectionAngle;
-        Quaternion newRotation = Quaternion.Euler(angles);
+        // To deflect the mosquito in other arbitrary directions
+        Vector3 axis = Vector3.zero;
+        switch (turnAxis)
+        {
+            case TurnAxis.X:
+                axis = Vector3.right;
+                break;
+            case TurnAxis.Y:
+                axis = Vector3.up;
+                break;
+            case TurnAxis.Z:
+                axis = Vector3.forward;
+                break;
+        }
+        Quaternion turn = Quaternion.AngleAxis(deflectionAngle, axis);
+        Quaternion newRotation = turn * body.rotation;
         body.MoveRotation(newRotation);
         repelledMosquito.Add(mosquito);
         Debug.Log("Mosquito reached inner range and was repelled.");
