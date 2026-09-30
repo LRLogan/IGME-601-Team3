@@ -61,7 +61,7 @@ public class MosquitoAgent : MonoBehaviour
     /// </summary>
     private void Idle()
     {
-        // Nothing to do.
+        // Nothing to do yet
     }
 
     /// <summary>
