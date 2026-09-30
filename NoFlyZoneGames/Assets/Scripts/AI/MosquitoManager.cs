@@ -24,6 +24,7 @@ public class MosquitoManager : MonoBehaviour
         }
     }
 
+    #region Public acess point controls
     public void SetAllTask(MosquitoAgent.Task task)
     {
         foreach (MosquitoAgent mosquito in mosquitoes)
@@ -58,4 +59,5 @@ public class MosquitoManager : MonoBehaviour
     {
         mosquitoes.Remove(mosquito);
     }
+    #endregion
 }

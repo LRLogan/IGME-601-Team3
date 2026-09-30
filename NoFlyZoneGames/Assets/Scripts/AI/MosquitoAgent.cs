@@ -5,6 +5,9 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class MosquitoAgent : MonoBehaviour
 {
+    /// <summary>
+    /// Overarching tasks the mosquito can partake in 
+    /// </summary>
     public enum Task
     {
         Idle,
@@ -35,6 +38,7 @@ public class MosquitoAgent : MonoBehaviour
 
     private void Update()
     {
+        // Delegates a task to its respective behavior 
         switch (CurrentTask)
         {
             case Task.Idle:
@@ -51,15 +55,18 @@ public class MosquitoAgent : MonoBehaviour
         }
     }
 
-    //==================================================
-    // TASK SYSTEM
-    //==================================================
-
+    #region TASK SYSTEM
+    /// <summary>
+    /// Idle task
+    /// </summary>
     private void Idle()
     {
         // Nothing to do.
     }
 
+    /// <summary>
+    /// Pathfinding task
+    /// </summary>
     private void Pathfinding()
     {
         if (!mAgent.isOnNavMesh)
@@ -74,6 +81,9 @@ public class MosquitoAgent : MonoBehaviour
         CurrentTask = Task.Move;
     }
 
+    /// <summary>
+    /// Move task
+    /// </summary>
     private void Move()
     {
         if (mFleeing)
@@ -82,7 +92,7 @@ public class MosquitoAgent : MonoBehaviour
             return;
         }
 
-        // If this is the final destination, Arrive.
+        // If this is the final destination, Arrive
         if (Vector3.Distance(transform.position, mTarget) <= arriveDistance)
         {
             Arrive();
@@ -92,11 +102,9 @@ public class MosquitoAgent : MonoBehaviour
             Seek();
         }
     }
+    #endregion
 
-    //==================================================
-    // MOVEMENT BEHAVIORS
-    //==================================================
-
+    #region MOVEMENT BEHAVIORS
     private void Seek()
     {
         mAgent.speed = moveSpeed;
@@ -116,8 +124,7 @@ public class MosquitoAgent : MonoBehaviour
             return;
         }
 
-        float speedPercent = Mathf.Clamp01(
-            distance / arriveDistance);
+        float speedPercent = Mathf.Clamp01(distance / arriveDistance);
 
         mAgent.speed = moveSpeed * speedPercent;
         mAgent.SetDestination(mTarget);
@@ -125,14 +132,10 @@ public class MosquitoAgent : MonoBehaviour
 
     private void Flee()
     {
-        Vector3 fleeDirection =
-            transform.position - mTarget;
-
+        Vector3 fleeDirection = transform.position - mTarget;
         fleeDirection.y = 0f;
 
-        if (fleeDirection.sqrMagnitude < 0.001f)
-            return;
-
+        if (fleeDirection.sqrMagnitude < 0.001f) return;
         fleeDirection.Normalize();
 
         Vector3 fleePosition =
@@ -158,11 +161,13 @@ public class MosquitoAgent : MonoBehaviour
             }
         }
     }
+    #endregion
 
-    //==================================================
-    // PUBLIC TASK INTERFACE
-    //==================================================
-
+    #region PUBLIC TASK INTERFACE
+    /// <summary>
+    /// Simple move to behavior 
+    /// </summary>
+    /// <param name="target"></param>
     public void MoveTo(Vector3 target)
     {
         mTarget = target;
@@ -171,6 +176,10 @@ public class MosquitoAgent : MonoBehaviour
         CurrentTask = Task.Pathfinding;
     }
 
+    /// <summary>
+    /// Simple fleeing bahavior
+    /// </summary>
+    /// <param name="target"></param>
     public void FleeFrom(Vector3 target)
     {
         mTarget = target;
@@ -179,14 +188,22 @@ public class MosquitoAgent : MonoBehaviour
         CurrentTask = Task.Pathfinding;
     }
 
+    /// <summary>
+    /// External task setting
+    /// </summary>
+    /// <param name="task"></param>
     public void SetTask(Task task)
     {
         CurrentTask = task;
     }
 
+    /// <summary>
+    /// Reset function 
+    /// </summary>
     public void Stop()
     {
         mAgent.ResetPath();
         mAgent.speed = moveSpeed;
     }
+    #endregion
 }
