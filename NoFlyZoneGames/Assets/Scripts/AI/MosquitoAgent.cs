@@ -1,37 +1,8 @@
-
-using UnityEngine;
-using UnityEngine.AI;
-
-[RequireComponent(typeof(NavMeshAgent))]
-public class MosquitoAgent : MonoBehaviour
-{
-    private NavMeshAgent mAgent;
-
-    private void Awake()
-    {
-        mAgent = GetComponent<NavMeshAgent>();
-
-        mAgent.speed = 3f;
-    }
-
-    public void MoveTo(Vector3 target)
-    {
-        if (!mAgent.isOnNavMesh)
-        {
-            Debug.LogWarning($"{name} is not on the NavMesh.");
-            return;
-        }
-
-        mAgent.SetDestination(target);
-    }
-}
-
-/*
- * 
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+[RequireComponent(typeof(NavMeshAgent))]
 public class MosquitoAgent : MonoBehaviour
 {
     public enum Task
@@ -43,66 +14,179 @@ public class MosquitoAgent : MonoBehaviour
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float waypointDistance = 0.2f;
+    [SerializeField] private float arriveDistance = 2f;
+    [SerializeField] private float fleeDistance = 5f;
 
     public Task CurrentTask { get; private set; }
 
-    private List<Vector3> mPath = new();
-    private int mPathIndex;
+    private NavMeshAgent mAgent;
 
-    private void Start()
+    private Vector3 mTarget;
+    private bool mFleeing;
+
+    private void Awake()
     {
+        mAgent = GetComponent<NavMeshAgent>();
+
+        mAgent.speed = moveSpeed;
+
         CurrentTask = Task.Idle;
     }
 
     private void Update()
     {
-        if (CurrentTask != Task.Move)
-            return;
+        switch (CurrentTask)
+        {
+            case Task.Idle:
+                Idle();
+                break;
 
-        Move();
+            case Task.Pathfinding:
+                Pathfinding();
+                break;
+
+            case Task.Move:
+                Move();
+                break;
+        }
     }
 
-    public void MoveTo(Vector3 target)
-    {
-        CurrentTask = Task.Pathfinding;
+    //==================================================
+    // TASK SYSTEM
+    //==================================================
 
-        if (!MosquitoPathfinder.FindPath(
-                transform.position,
-                target,
-                mPath))
+    private void Idle()
+    {
+        // Nothing to do.
+    }
+
+    private void Pathfinding()
+    {
+        if (!mAgent.isOnNavMesh)
         {
+            Debug.LogWarning($"{name} is not on the NavMesh.");
             CurrentTask = Task.Idle;
             return;
         }
 
-        mPathIndex = 0;
+        mAgent.SetDestination(mTarget);
+
         CurrentTask = Task.Move;
     }
 
     private void Move()
     {
-        if (mPathIndex >= mPath.Count)
+        if (mFleeing)
         {
+            Flee();
+            return;
+        }
+
+        // If this is the final destination, Arrive.
+        if (Vector3.Distance(transform.position, mTarget) <= arriveDistance)
+        {
+            Arrive();
+        }
+        else
+        {
+            Seek();
+        }
+    }
+
+    //==================================================
+    // MOVEMENT BEHAVIORS
+    //==================================================
+
+    private void Seek()
+    {
+        mAgent.speed = moveSpeed;
+        mAgent.SetDestination(mTarget);
+    }
+
+    private void Arrive()
+    {
+        float distance = Vector3.Distance(
+            transform.position,
+            mTarget);
+
+        if (distance <= mAgent.stoppingDistance + 0.1f)
+        {
+            Stop();
             CurrentTask = Task.Idle;
             return;
         }
 
-        Vector3 target = mPath[mPathIndex];
+        float speedPercent = Mathf.Clamp01(
+            distance / arriveDistance);
 
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            target,
-            moveSpeed * Time.deltaTime);
+        mAgent.speed = moveSpeed * speedPercent;
+        mAgent.SetDestination(mTarget);
+    }
 
-        Vector3 direction = target - transform.position;
+    private void Flee()
+    {
+        Vector3 fleeDirection =
+            transform.position - mTarget;
 
-        if (direction.sqrMagnitude > 0.001f)
-            transform.forward = direction.normalized;
+        fleeDirection.y = 0f;
 
-        if (Vector3.Distance(transform.position, target) <= waypointDistance)
-            mPathIndex++;
+        if (fleeDirection.sqrMagnitude < 0.001f)
+            return;
+
+        fleeDirection.Normalize();
+
+        Vector3 fleePosition =
+            transform.position +
+            fleeDirection * fleeDistance;
+
+        if (NavMesh.SamplePosition(
+                fleePosition,
+                out NavMeshHit hit,
+                fleeDistance,
+                NavMesh.AllAreas))
+        {
+            mAgent.speed = moveSpeed;
+            mAgent.SetDestination(hit.position);
+
+            if (Vector3.Distance(
+                    transform.position,
+                    mTarget) >= fleeDistance)
+            {
+                mFleeing = false;
+                Stop();
+                CurrentTask = Task.Idle;
+            }
+        }
+    }
+
+    //==================================================
+    // PUBLIC TASK INTERFACE
+    //==================================================
+
+    public void MoveTo(Vector3 target)
+    {
+        mTarget = target;
+        mFleeing = false;
+
+        CurrentTask = Task.Pathfinding;
+    }
+
+    public void FleeFrom(Vector3 target)
+    {
+        mTarget = target;
+        mFleeing = true;
+
+        CurrentTask = Task.Pathfinding;
+    }
+
+    public void SetTask(Task task)
+    {
+        CurrentTask = task;
+    }
+
+    public void Stop()
+    {
+        mAgent.ResetPath();
+        mAgent.speed = moveSpeed;
     }
 }
- * */
-

@@ -451,6 +451,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1af1e698d4d6ef4db56589802cedbb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MosquitoAgent
+  moveSpeed: 3
+  arriveDistance: 2
+  fleeDistance: 5
 --- !u!195 &546905661
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -2369,13 +2372,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1993887753}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.09403909, y: -0, z: -0, w: 0.9955685}
-  m_LocalPosition: {x: 0, y: 1.11, z: -2.071}
+  m_LocalRotation: {x: 0.13017538, y: -0, z: -0, w: 0.991491}
+  m_LocalPosition: {x: 0, y: 1.27, z: -2.88}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 546905658}
-  m_LocalEulerAnglesHint: {x: 10.792, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 14.959, y: 0, z: 0}
 --- !u!114 &1993887757
 MonoBehaviour:
   m_ObjectHideFlags: 0
