@@ -533,9 +533,9 @@ MonoBehaviour:
   mMass: 1
   mMaxSpeed: 3
   mMaxForce: 10
-  jitterRadius: 0.5
+  jitterRadius: 0.75
   jitterForce: 2
-  jitterChangeInterval: 1
+  jitterChangeInterval: 0.15
   externalDrag: 2
 --- !u!195 &546905661
 NavMeshAgent:

@@ -22,6 +22,8 @@ public class MosquitoAgent : MonoBehaviour
     [SerializeField] private float mMass = 1f;
     [SerializeField] private float mMaxSpeed = 3f;
     [SerializeField] private float mMaxForce = 10f;
+    [SerializeField] private float maxHeight = 1f;
+    [SerializeField] private float minHeight = 10f;
     [SerializeField] private float jitterRadius = 0.5f;
     [SerializeField] private float jitterForce = 0.5f;
 
@@ -146,6 +148,7 @@ public class MosquitoAgent : MonoBehaviour
         // Keep the NavMeshAgent synchronized with our manually
         // controlled position so it can continue calculating paths.
         mAgent.nextPosition = transform.position;
+            Mathf.Clamp(transform.position.y, minHeight, maxHeight);
 
         if (mVelocity.sqrMagnitude > 0.001f)
         {
@@ -203,9 +206,10 @@ public class MosquitoAgent : MonoBehaviour
             mAgent.gameObject.transform.position + jitterTarget;
 
         // returns the calculated steering force
-        Vector3 steeringForce = (targetWorld - mAgent.gameObject.transform.position).normalized * jitterForce;
-        steeringForce.y = 0;
-        Debug.Log(steeringForce);
+        Vector3 steeringForce = 
+            (targetWorld - mAgent.gameObject.transform.position).normalized * jitterForce;
+        //steeringForce.y = 0;
+        Debug.DrawRay(mAgent.gameObject.transform.position, steeringForce, Color.red);
         return steeringForce;
     }
 
