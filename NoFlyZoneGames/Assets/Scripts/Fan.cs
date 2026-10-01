@@ -1,5 +1,6 @@
 using UnityEngine;
-public class Fan : MonoBehaviour 
+
+public class Fan : MonoBehaviour
 {
     private string itemName;
     [SerializeField]
@@ -8,34 +9,39 @@ public class Fan : MonoBehaviour
     private float strength;
 
     [SerializeField]
-    BoxCollider hitbox;
-
-    Rigidbody mosquitoRb;
+    private BoxCollider hitbox;
 
     public void Start()
     {
         itemName = "fan";
+        radius = 15.0f;
+        strength = 5f;
 
-        //Change length of fan hitbox to radius size
-        hitbox.size = new Vector3(radius, 1,1);
-        hitbox.center = new Vector3(radius/2 ,0,0);
+        // Change length of fan hitbox to radius size
+        hitbox.size = new Vector3(radius, 1, 1);
+        hitbox.center = new Vector3(radius / 2, 0, 0);
     }
 
-    public void OnTriggerEnter(Collider other)
+    public void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Mosquito"));
-        {
-            mosquitoRb = other.GetComponent<Rigidbody>();
-            Push(mosquitoRb);
 
+        if (other.CompareTag("Mosquito"))
+        {
+            Debug.Log("Mosquito detected!");
+            MosquitoAgent mosquito = other.GetComponent<MosquitoAgent>();
+
+            if (mosquito != null)
+            {
+                Push(mosquito);
+            }
         }
     }
 
     public void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Mosquito"));
+        if (other.CompareTag("Mosquito"))
         {
-            mosquitoRb.linearVelocity = Vector3.zero;
+            //mosquitoRb.linearVelocity = Vector3.zero;
         }
     }
     /// <summary>
@@ -46,8 +52,7 @@ public class Fan : MonoBehaviour
     {
         //Get the correct push direction away from the fan
         Vector3 direction = rb.position - transform.position;
-        direction = Vector3.Normalize(direction);
-
+        direction.normalize();
         rb.AddForce(direction * strength, ForceMode.Impulse);
     }
 }
