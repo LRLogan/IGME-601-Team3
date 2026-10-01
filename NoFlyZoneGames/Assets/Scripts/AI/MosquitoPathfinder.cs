@@ -6,6 +6,13 @@ public static class MosquitoPathfinder
 {
     private static readonly NavMeshPath mNavMeshPath = new();
 
+    /// <summary>
+    /// Simple pathfinding algorithem using the NavMesh
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="target"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
     public static bool FindPath(Vector3 start, Vector3 target, List<Vector3> path)
     {
         path.Clear();
