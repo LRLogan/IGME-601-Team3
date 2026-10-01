@@ -21,8 +21,12 @@ public class NextLvl : MonoBehaviour
 
     public void OnPress()
     {
-        Debug.Log("yo momm");
+        Debug.Log("teleport");
         //very hard coded for now
+        player.GetComponent<CharacterController>().enabled = false;
         player.transform.position = spawn.transform.position;
+        player.GetComponent<CharacterController>().enabled = true;
+        gameObject.SetActive(false);
+
     }
 }
