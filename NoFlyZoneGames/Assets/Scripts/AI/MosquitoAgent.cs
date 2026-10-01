@@ -22,8 +22,8 @@ public class MosquitoAgent : MonoBehaviour
     [SerializeField] private float mMass = 1f;
     [SerializeField] private float mMaxSpeed = 3f;
     [SerializeField] private float mMaxForce = 10f;
-    [SerializeField] private float jitterRadius = 2f;
-    [SerializeField] private float jitterForce = 4f;
+    [SerializeField] private float jitterRadius = 0.5f;
+    [SerializeField] private float jitterForce = 0.5f;
 
     [Tooltip("Time in seconds")]
     [SerializeField] private float jitterChangeInterval = 2f;
@@ -178,7 +178,7 @@ public class MosquitoAgent : MonoBehaviour
 
         Vector3 acceleration = steering / mMass;
 
-        mVelocity += acceleration * Time.deltaTime;
+        mVelocity += (acceleration + Jitter()) * Time.deltaTime;
     }
 
     /// <summary>
@@ -203,8 +203,10 @@ public class MosquitoAgent : MonoBehaviour
             mAgent.gameObject.transform.position + jitterTarget;
 
         // returns the calculated steering force
-        return 
-            (targetWorld - mAgent.gameObject.transform.position).normalized * jitterForce;
+        Vector3 steeringForce = (targetWorld - mAgent.gameObject.transform.position).normalized * jitterForce;
+        steeringForce.y = 0;
+        Debug.Log(steeringForce);
+        return steeringForce;
     }
 
     /// <summary>
