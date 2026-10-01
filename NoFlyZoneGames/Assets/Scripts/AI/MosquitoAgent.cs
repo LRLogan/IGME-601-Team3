@@ -19,17 +19,31 @@ public class MosquitoAgent : MonoBehaviour
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float arriveDistance = 2f;
     [SerializeField] private float fleeDistance = 5f;
+    [SerializeField] private float mMass = 1f;
+    [SerializeField] private float mMaxSpeed = 3f;
+    [SerializeField] private float mMaxForce = 10f;
 
+    [Header("External Forces")]
+    [SerializeField] private float externalDrag = 2f;
+
+    [Header("Misc")]
     public Task CurrentTask { get; private set; }
 
     private NavMeshAgent mAgent;
 
     private Vector3 mTarget;
+    private Vector3 mVelocity;
+    private Vector3 mExternalVelocity;
     private bool mFleeing;
 
     private void Awake()
     {
         mAgent = GetComponent<NavMeshAgent>();
+
+        // NavMeshAgent is responsible for calculating the path,
+        // but NOT for moving or rotating the mosquito.
+        mAgent.updatePosition = false;
+        mAgent.updateRotation = false;
 
         mAgent.speed = moveSpeed;
 
@@ -56,6 +70,7 @@ public class MosquitoAgent : MonoBehaviour
     }
 
     #region TASK SYSTEM
+
     /// <summary>
     /// Idle task
     /// </summary>
@@ -76,6 +91,8 @@ public class MosquitoAgent : MonoBehaviour
             return;
         }
 
+        // Ask the NavMeshAgent to calculate a path.
+        // It will not move the mosquito because updatePosition is false.
         mAgent.SetDestination(mTarget);
 
         CurrentTask = Task.Move;
@@ -89,11 +106,8 @@ public class MosquitoAgent : MonoBehaviour
         if (mFleeing)
         {
             Flee();
-            return;
         }
-
-        // If this is the final destination, Arrive
-        if (Vector3.Distance(transform.position, mTarget) <= arriveDistance)
+        else if (Vector3.Distance(transform.position, mTarget) <= arriveDistance)
         {
             Arrive();
         }
@@ -101,16 +115,74 @@ public class MosquitoAgent : MonoBehaviour
         {
             Seek();
         }
+
+        ApplyVelocity();
     }
+
+    /// <summary>
+    /// Applies the calculated velocity to the mosquito's position.
+    /// The NavMeshAgent does not directly move the mosquito.
+    /// </summary>
+    private void ApplyVelocity()
+    {
+        mVelocity = Vector3.ClampMagnitude(
+            mVelocity,
+            mMaxSpeed);
+
+        Vector3 finalVelocity = mVelocity + mExternalVelocity;
+        transform.position += finalVelocity * Time.deltaTime;
+
+        mExternalVelocity = Vector3.Lerp(
+            mExternalVelocity,
+            Vector3.zero,
+            externalDrag * Time.deltaTime);
+
+        // Keep the NavMeshAgent synchronized with our manually
+        // controlled position so it can continue calculating paths.
+        mAgent.nextPosition = transform.position;
+
+        if (mVelocity.sqrMagnitude > 0.001f)
+        {
+            transform.forward = mVelocity.normalized;
+        }
+    }
+
     #endregion
 
     #region MOVEMENT BEHAVIORS
+
+    /// <summary>
+    /// Seek behavior.
+    /// Uses the velocity calculated by the NavMeshAgent's path
+    /// as the desired movement direction.
+    /// </summary>
     private void Seek()
     {
-        mAgent.speed = moveSpeed;
-        mAgent.SetDestination(mTarget);
+        Vector3 desiredVelocity = mAgent.desiredVelocity;
+
+        if (desiredVelocity.sqrMagnitude <= 0.001f)
+            return;
+
+        desiredVelocity =
+            desiredVelocity.normalized * moveSpeed;
+
+        Vector3 steering =
+            desiredVelocity - mVelocity;
+
+        steering = Vector3.ClampMagnitude(
+            steering,
+            mMaxForce);
+
+        Vector3 acceleration =
+            steering / mMass;
+
+        mVelocity += acceleration * Time.deltaTime;
     }
 
+    /// <summary>
+    /// Arrive behavior.
+    /// Slows the mosquito as it approaches its final target.
+    /// </summary>
     private void Arrive()
     {
         float distance = Vector3.Distance(
@@ -119,23 +191,71 @@ public class MosquitoAgent : MonoBehaviour
 
         if (distance <= mAgent.stoppingDistance + 0.1f)
         {
+            mVelocity = Vector3.zero;
+
             Stop();
+
             CurrentTask = Task.Idle;
             return;
         }
 
-        float speedPercent = Mathf.Clamp01(distance / arriveDistance);
+        Vector3 desiredVelocity = mAgent.desiredVelocity;
 
-        mAgent.speed = moveSpeed * speedPercent;
-        mAgent.SetDestination(mTarget);
+        if (desiredVelocity.sqrMagnitude <= 0.001f)
+            return;
+
+        // Reduce the desired speed as we approach the target.
+        float speedPercent = Mathf.Clamp01(
+            distance / arriveDistance);
+
+        desiredVelocity =
+            desiredVelocity.normalized *
+            moveSpeed *
+            speedPercent;
+
+        Vector3 steering =
+            desiredVelocity - mVelocity;
+
+        steering = Vector3.ClampMagnitude(
+            steering,
+            mMaxForce);
+
+        Vector3 acceleration =
+            steering / mMass;
+
+        mVelocity += acceleration * Time.deltaTime;
     }
 
+    /// <summary>
+    /// Flee behavior.
+    /// Calculates a point away from the target and asks the
+    /// NavMeshAgent to path toward that point.
+    /// </summary>
     private void Flee()
     {
-        Vector3 fleeDirection = transform.position - mTarget;
-        fleeDirection.y = 0f;
+        float distance = Vector3.Distance(
+            transform.position,
+            mTarget);
 
-        if (fleeDirection.sqrMagnitude < 0.001f) return;
+        // Once sufficiently far away, stop fleeing.
+        if (distance >= fleeDistance)
+        {
+            mFleeing = false;
+
+            mVelocity = Vector3.zero;
+
+            Stop();
+
+            CurrentTask = Task.Idle;
+            return;
+        }
+
+        Vector3 fleeDirection =
+            transform.position - mTarget;
+
+        if (fleeDirection.sqrMagnitude < 0.001f)
+            return;
+
         fleeDirection.Normalize();
 
         Vector3 fleePosition =
@@ -148,22 +268,16 @@ public class MosquitoAgent : MonoBehaviour
                 fleeDistance,
                 NavMesh.AllAreas))
         {
-            mAgent.speed = moveSpeed;
             mAgent.SetDestination(hit.position);
 
-            if (Vector3.Distance(
-                    transform.position,
-                    mTarget) >= fleeDistance)
-            {
-                mFleeing = false;
-                Stop();
-                CurrentTask = Task.Idle;
-            }
+            Seek();
         }
     }
+
     #endregion
 
     #region PUBLIC TASK INTERFACE
+
     /// <summary>
     /// Simple move to behavior 
     /// </summary>
@@ -177,7 +291,7 @@ public class MosquitoAgent : MonoBehaviour
     }
 
     /// <summary>
-    /// Simple fleeing bahavior
+    /// Simple fleeing behavior
     /// </summary>
     /// <param name="target"></param>
     public void FleeFrom(Vector3 target)
@@ -205,5 +319,43 @@ public class MosquitoAgent : MonoBehaviour
         mAgent.ResetPath();
         mAgent.speed = moveSpeed;
     }
+
+    /// <summary>
+    /// Applies an external force to the mosquito.
+    /// Designed to provide an interface similar to Rigidbody.AddForce().
+    /// </summary>
+    /// <param name="force">Force vector to apply.</param>
+    /// <param name="mode">How the force should affect velocity.</param>
+    public void AddForce(Vector3 force, ForceMode mode)
+    {
+        switch (mode)
+        {
+            case ForceMode.Force:
+                mExternalVelocity +=
+                    force / mMass *
+                    Time.deltaTime;
+                break;
+
+            case ForceMode.Acceleration:
+                mExternalVelocity +=
+                    force *
+                    Time.deltaTime;
+                break;
+
+            case ForceMode.Impulse:
+                mExternalVelocity +=
+                    force / mMass;
+                break;
+
+            case ForceMode.VelocityChange:
+                mExternalVelocity += force;
+                break;
+        }
+
+        mExternalVelocity = Vector3.ClampMagnitude(
+            mExternalVelocity,
+            mMaxSpeed);
+    }
+
     #endregion
 }
