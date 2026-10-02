@@ -28,6 +28,9 @@ public class PlayerInteraction : MonoBehaviour
     // The item currently being held by the player.
     private PickupItem heldItem;
 
+    // The held item's solid (non-trigger) collider, cached when it is picked up.
+    private Collider heldCollider;
+
     // The visual copy of the held item used for the placement preview.
     private GameObject placementPreview;
 
@@ -63,6 +66,22 @@ public class PlayerInteraction : MonoBehaviour
         {
             UpdatePlacement();
         }
+    }
+
+    /// <summary>
+    /// Returns the first enabled, non-trigger collider on the object or its children.
+    /// </summary>
+    private Collider GetSolidCollider(GameObject target)
+    {
+        foreach (Collider col in target.GetComponentsInChildren<Collider>())
+        {
+            if (col.enabled && !col.isTrigger)
+            {
+                return col;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -112,6 +131,11 @@ public class PlayerInteraction : MonoBehaviour
         heldItem = item;
 
         // Create the preview while the real item is still in its original state.
+        CreatePlacementPreview();
+
+        // Cache on pickup
+        heldItem = item;
+        heldCollider = GetSolidCollider(heldItem.gameObject);
         CreatePlacementPreview();
 
         // Attach the real item to the player's hold point.
@@ -226,37 +250,26 @@ public class PlayerInteraction : MonoBehaviour
     /// <returns>The calculated world position for the held item.</returns>
     private Vector3 GetPlacementPosition(RaycastHit hit)
     {
-        BoxCollider boxCollider = heldItem.GetComponent<BoxCollider>();
-
-        if (boxCollider != null)
-        {
-            // Find the bottom of the box in the item's local space.
-            float localBottom = boxCollider.center.y -
-                boxCollider.size.y * 0.5f;
-
-            // Account for the item's world scale.
-            float bottomOffset = -localBottom *
-                heldItem.transform.lossyScale.y;
-
-            // Place the item's bottom directly on the surface.
-            return hit.point + Vector3.up *
-                (bottomOffset + placementPadding);
-        }
-
-        Collider itemCollider = heldItem.GetComponent<Collider>();
-
-        if (itemCollider == null)
+        if (heldCollider == null)
         {
             return hit.point + Vector3.up * placementPadding;
         }
 
-        // Fall back to the existing calculation for non-box colliders.
-        float fallbackOffset =
-            heldItem.transform.position.y -
-            itemCollider.bounds.min.y;
+        // Only use the box math when the collider is on the item's root.
+        // A box on a child can be offset from the pivot, which this math ignores.
+        if (heldCollider is BoxCollider boxCollider &&
+            boxCollider.transform == heldItem.transform)
+        {
+            float localBottom = boxCollider.center.y - boxCollider.size.y * 0.5f;
+            float bottomOffset = -localBottom * heldItem.transform.lossyScale.y;
 
-        return hit.point + Vector3.up *
-            (fallbackOffset + placementPadding);
+            return hit.point + Vector3.up * (bottomOffset + placementPadding);
+        }
+
+        float fallbackOffset = 
+            heldItem.transform.position.y - heldCollider.bounds.min.y;
+
+        return hit.point + Vector3.up * (fallbackOffset + placementPadding);
     }
 
     /// <summary>
@@ -332,40 +345,44 @@ public class PlayerInteraction : MonoBehaviour
     /// <returns>True if the placement location contains another object.</returns>
     private bool CheckForObjectCollision()
     {
-        Collider itemCollider = heldItem.GetComponent<Collider>();
-
-        if (itemCollider == null)
+        if (heldCollider == null)
         {
             return false;
         }
 
-        Vector3 localCenter = heldItem.transform.InverseTransformPoint(
-            itemCollider.bounds.center
-        );
+        Transform itemTransform = heldItem.transform;
+        Quaternion inverseItemRotation = Quaternion.Inverse(itemTransform.rotation);
 
-        Vector3 colliderCenter = placementPosition +
-            placementRotation * localCenter;
+        // Where the collider's bounds center sits relative to the item's pivot,
+        // re-expressed at the placement rotation (no scale distortion).
+        Vector3 centerOffset = inverseItemRotation *
+            (heldCollider.bounds.center - itemTransform.position);
+        Vector3 colliderCenter = placementPosition + placementRotation * centerOffset;
 
+        // The collider's own transform pose at the placement location.
+        Vector3 colliderPosition = placementPosition + placementRotation *
+            (inverseItemRotation *
+                (heldCollider.transform.position - itemTransform.position));
+        Quaternion colliderRotation = placementRotation * inverseItemRotation *
+            heldCollider.transform.rotation;
+
+        // Triggers are ignored at the query level.
         Collider[] nearbyColliders = Physics.OverlapSphere(
             colliderCenter,
-            itemCollider.bounds.extents.magnitude
+            heldCollider.bounds.extents.magnitude,
+            Physics.AllLayers,
+            QueryTriggerInteraction.Ignore
         );
 
         foreach (Collider other in nearbyColliders)
         {
-            // Ignore the held item's own collider.
-            if (other == itemCollider)
+            // Ignore any collider belonging to the held item itself.
+            if (other.transform.IsChildOf(itemTransform))
             {
                 continue;
             }
 
             // Ignore the player and its child colliders.
-            if (other.transform == transform || other.transform.IsChildOf(transform))
-            {
-                continue;
-            }
-
-            // Ignore the player.
             if (other.transform.IsChildOf(transform))
             {
                 continue;
@@ -377,11 +394,10 @@ public class PlayerInteraction : MonoBehaviour
                 continue;
             }
 
-            // Check the actual collider shapes for an overlap.
             if (Physics.ComputePenetration(
-                    itemCollider,
-                    colliderCenter,
-                    placementRotation,
+                    heldCollider,
+                    colliderPosition,
+                    colliderRotation,
                     other,
                     other.transform.position,
                     other.transform.rotation,
@@ -459,6 +475,7 @@ public class PlayerInteraction : MonoBehaviour
 
         // The player is no longer holding anything.
         heldItem = null;
+        heldCollider = null;
         canPlace = false;
     }
 }
