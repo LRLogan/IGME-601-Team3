@@ -32,7 +32,7 @@ public class Fan : MonoBehaviour
 
             if (mosquito != null)
             {
-                Push(mosquito);
+                Push(mosquito.GetComponent<Rigidbody>());
             }
         }
     }
@@ -52,7 +52,7 @@ public class Fan : MonoBehaviour
     {
         //Get the correct push direction away from the fan
         Vector3 direction = rb.position - transform.position;
-        direction.normalize();
+        direction.Normalize();
         rb.AddForce(direction * strength, ForceMode.Impulse);
     }
 }
