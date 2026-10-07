@@ -208,7 +208,7 @@ public class MosquitoAgent : MonoBehaviour
         // returns the calculated steering force
         Vector3 steeringForce = 
             (targetWorld - mAgent.gameObject.transform.position).normalized * jitterForce;
-        //steeringForce.y = 0;
+        steeringForce.y = 0;
         Debug.DrawRay(mAgent.gameObject.transform.position, steeringForce, Color.red);
         return steeringForce;
     }
