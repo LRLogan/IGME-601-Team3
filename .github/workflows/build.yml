@@ -25,7 +25,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: IGME-601-Team3/Library
-          key: Library-${{ hashFiles('IGME-601-Team3/Assets/**', 'IGME-601-Team3/Packages/**', 'IGME-601-Team3/ProjectSettings/**') }}
+          key: Library-${{ hashFiles('NoFlyZoneGames/Assets/**', 'NoFlyZoneGames/Packages/**', 'NoFlyZoneGames/ProjectSettings/**') }}
           restore-keys: |
             Library-
 
@@ -37,7 +37,7 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          projectPath: IGME-601-Team3
+          projectPath: NoFlyZoneGames
           targetPlatform: StandaloneWindows
           buildName: NoFlyZoneGames
           buildsPath: build
