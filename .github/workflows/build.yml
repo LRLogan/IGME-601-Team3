@@ -1,0 +1,51 @@
+name: Test & Build
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Unity Project for Windows
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true # use true if your repo has Unity assets tracked by LFS
+
+      # Cache the Unity Library folder for faster builds
+      - name: Cache Library folder
+        uses: actions/cache@v3
+        with:
+          path: IGME-601-Team3/Library
+          key: Library-${{ hashFiles('IGME-601-Team3/Assets/**', 'IGME-601-Team3/Packages/**', 'IGME-601-Team3/ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      # Build the project
+      - name: Build project for Windows
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: IGME-601-Team3
+          targetPlatform: StandaloneWindows
+          buildName: NoFlyZoneGames
+          buildsPath: build
+          versioning: None
+
+      # Upload the built artifact
+      - name: Upload Windows Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NoFlyZoneGames-Windows
+          path: build/StandaloneWindows
