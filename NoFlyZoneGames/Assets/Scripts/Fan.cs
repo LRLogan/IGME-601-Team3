@@ -3,7 +3,9 @@ using UnityEngine;
 public class Fan : MonoBehaviour
 {
     private string itemName;
+    [SerializeField]
     private float radius;
+    [SerializeField]
     private float strength;
 
     [SerializeField]
@@ -30,7 +32,7 @@ public class Fan : MonoBehaviour
 
             if (mosquito != null)
             {
-                Push(mosquito);
+                Push(mosquito.GetComponent<Rigidbody>());
             }
         }
     }
@@ -42,19 +44,15 @@ public class Fan : MonoBehaviour
             //mosquitoRb.linearVelocity = Vector3.zero;
         }
     }
-
     /// <summary>
-    /// Pushes the given mosquito directly away from the fan.
+    /// Pushes the given rigid body directly away from the fan
     /// </summary>
-    /// <param name="mosquito"></param>
-    public void Push(MosquitoAgent mosquito)
+    /// <param name="rb"></param>
+    public void Push(Rigidbody rb)
     {
-        // Get the push direction away from the fan.
-        Vector3 direction = Vector3.forward;
+        //Get the correct push direction away from the fan
+        Vector3 direction = rb.position - transform.position;
         direction.Normalize();
-
-        mosquito.AddForce(
-            direction * strength,
-            ForceMode.Force);
+        rb.AddForce(direction * strength, ForceMode.Impulse);
     }
 }

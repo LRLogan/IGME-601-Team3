@@ -115,7 +115,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 11.392665, y: 1, z: 1}
   m_Center: {x: 5.196334, y: 0, z: 4.250235e-15}
---- !u!114 &6087857049531265635
+--- !u!114 &7451675374088676280
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,6 +127,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c59ea600bc7602a46acdc945dc5c95c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Fan
+  radius: 5
+  strength: 1
   hitbox: {fileID: 1796104908579323214}
 --- !u!114 &3648742338654109930
 MonoBehaviour:
