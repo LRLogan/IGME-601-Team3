@@ -46,6 +46,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7082548025577005047}
+  - component: {fileID: 8323685216168356349}
   m_Layer: 5
   m_Name: PlayerHUD
   m_TagString: Untagged
@@ -76,6 +77,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &8323685216168356349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601419657374370973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 308cc03036a1ba946b59d77da84d798c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHUDController
+  waveText: {fileID: 9144182040482442955}
+  strikeText: {fileID: 8697556436499473647}
+  interactionPrompt: {fileID: 208225008054506925}
+  actionText: {fileID: 6913206074240124484}
+  playerInteraction: {fileID: 0}
 --- !u!1 &4013334744123103116
 GameObject:
   m_ObjectHideFlags: 0
@@ -718,8 +736,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 60
+  m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
