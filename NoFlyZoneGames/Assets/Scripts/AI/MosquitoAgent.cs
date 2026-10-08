@@ -43,12 +43,18 @@ public class MosquitoAgent : MonoBehaviour
     private bool mFleeing;
     private float timeSinceLastJitter = 0f;
     private Vector3 jitterTarget;
+    private readonly Stack<Vector3> mTargetStack = new Stack<Vector3>();
 
     // External control vars
+    // External control is for COMPLETE control over the agent
+    // If you still want the agent to influince behavior DO NOT use external control
     private bool mExternallyControlled;
     private Task mPreviousTask;
     private Vector3 mPreviousTarget;
     private bool mPreviousFleeing;
+
+    // Inline way to get the current target
+    private Vector3 CurrentTarget => mTargetStack.Peek();
 
     private void Awake()
     {
@@ -101,15 +107,15 @@ public class MosquitoAgent : MonoBehaviour
     /// </summary>
     private void Pathfinding()
     {
-        if (!mAgent.isOnNavMesh)
+        if (!mAgent.isOnNavMesh || mTargetStack.Count == 0)
         {
-            Debug.LogWarning($"{name} is not on the NavMesh.");
             CurrentTask = Task.Idle;
             return;
         }
 
-        // Ask the NavMeshAgent to calculate a path.
-        // It will not move the mosquito because updatePosition is false.
+        // Ask the NavMeshAgent to calculate a path
+        // It will not move the mosquito because updatePosition is false
+        mTarget = CurrentTarget;
         mAgent.SetDestination(mTarget);
 
         CurrentTask = Task.Move;
@@ -120,11 +126,28 @@ public class MosquitoAgent : MonoBehaviour
     /// </summary>
     private void Move()
     {
+        // No task in stack
+        if (mTargetStack.Count == 0)
+        {
+            CurrentTask = Task.Idle;
+            return;
+        }
+
+        mTarget = CurrentTarget;
+
+        if (!mFleeing &&
+        Vector3.Distance(transform.position, mTarget) <= arriveDistance)
+        {
+            CompleteCurrentTarget();
+            return;
+        }
+
+        // Has a task -> delegate 
         if (mFleeing)
         {
             Flee();
         }
-        else if (Vector3.Distance(transform.position, mTarget) <= arriveDistance)
+        else if (mAgent.remainingDistance <= arriveDistance)
         {
             Arrive();
         }
@@ -163,6 +186,21 @@ public class MosquitoAgent : MonoBehaviour
         {
             transform.forward = mVelocity.normalized;
         }
+    }
+
+    private void CompleteCurrentTarget()
+    {
+        mTargetStack.Pop();
+
+        if (mTargetStack.Count == 0)
+        {
+            CurrentTask = Task.Idle;
+            return;
+        }
+
+        // A previous target still exists.
+        // Recalculate the path from the mosquito's new position.
+        CurrentTask = Task.Pathfinding;
     }
 
     #endregion
@@ -374,9 +412,8 @@ public class MosquitoAgent : MonoBehaviour
     /// <param name="target"></param>
     public void MoveTo(Vector3 target)
     {
-        mTarget = target;
+        mTargetStack.Push(target);
         mFleeing = false;
-
         CurrentTask = Task.Pathfinding;
     }
 
@@ -388,7 +425,6 @@ public class MosquitoAgent : MonoBehaviour
     {
         mTarget = target;
         mFleeing = true;
-
         CurrentTask = Task.Pathfinding;
     }
 
