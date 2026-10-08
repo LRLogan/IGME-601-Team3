@@ -10,18 +10,13 @@ public class MosquitoManager : MonoBehaviour
 {
     [SerializeField] private Transform pointB;
 
-    private readonly List<MosquitoAgent> mosquitoes = new();
+    private List<MosquitoAgent> mosquitoes = new();
 
     private void Start()
     {
         mosquitoes.AddRange(
             FindObjectsByType<MosquitoAgent>(
                 FindObjectsSortMode.None));
-
-        foreach (MosquitoAgent mosquito in mosquitoes)
-        {
-            mosquito.MoveTo(pointB.position);
-        }
     }
 
     #region Public acess point controls
@@ -39,6 +34,19 @@ public class MosquitoManager : MonoBehaviour
         {
             mosquito.MoveTo(target);
         }
+    }
+
+    public void MoveCollectionTo(List<MosquitoAgent> agents, Vector3 target)
+    {
+        foreach (MosquitoAgent mosquito in agents)
+        {
+            mosquito.MoveTo(target);
+        }
+    }
+
+    public void MoveOneTo(MosquitoAgent mosquito, Vector3 target)
+    {
+        mosquito.MoveTo(target);
     }
 
     public void FleeAllFrom(Vector3 target)
