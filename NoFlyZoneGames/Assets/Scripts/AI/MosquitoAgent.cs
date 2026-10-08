@@ -22,19 +22,39 @@ public class MosquitoAgent : MonoBehaviour
     [SerializeField] private float mMass = 1f;
     [SerializeField] private float mMaxSpeed = 3f;
     [SerializeField] private float mMaxForce = 10f;
+    [SerializeField] private float maxHeight = 1f;
+    [SerializeField] private float minHeight = 10f;
+    [SerializeField] private float jitterRadius = 0.5f;
+    [SerializeField] private float jitterForce = 0.5f;
+
+    [Tooltip("Time in seconds")]
+    [SerializeField] private float jitterChangeInterval = 2f;
 
     [Header("External Forces")]
     [SerializeField] private float externalDrag = 2f;
 
-    [Header("Misc")]
     public Task CurrentTask { get; private set; }
 
+    // --- Internal references ---
     private NavMeshAgent mAgent;
-
     private Vector3 mTarget;
     private Vector3 mVelocity;
     private Vector3 mExternalVelocity;
     private bool mFleeing;
+    private float timeSinceLastJitter = 0f;
+    private Vector3 jitterTarget;
+    private readonly Stack<Vector3> mTargetStack = new Stack<Vector3>();
+
+    // External control vars
+    // External control is for COMPLETE control over the agent
+    // If you still want the agent to influince behavior DO NOT use external control
+    private bool mExternallyControlled;
+    private Task mPreviousTask;
+    private Vector3 mPreviousTarget;
+    private bool mPreviousFleeing;
+
+    // Inline way to get the current target
+    private Vector3 CurrentTarget => mTargetStack.Peek();
 
     private void Awake()
     {
@@ -52,6 +72,9 @@ public class MosquitoAgent : MonoBehaviour
 
     private void Update()
     {
+        // Checks for external control
+        if (mExternallyControlled) return;
+
         // Delegates a task to its respective behavior 
         switch (CurrentTask)
         {
@@ -84,15 +107,15 @@ public class MosquitoAgent : MonoBehaviour
     /// </summary>
     private void Pathfinding()
     {
-        if (!mAgent.isOnNavMesh)
+        if (!mAgent.isOnNavMesh || mTargetStack.Count == 0)
         {
-            Debug.LogWarning($"{name} is not on the NavMesh.");
             CurrentTask = Task.Idle;
             return;
         }
 
-        // Ask the NavMeshAgent to calculate a path.
-        // It will not move the mosquito because updatePosition is false.
+        // Ask the NavMeshAgent to calculate a path
+        // It will not move the mosquito because updatePosition is false
+        mTarget = CurrentTarget;
         mAgent.SetDestination(mTarget);
 
         CurrentTask = Task.Move;
@@ -103,11 +126,28 @@ public class MosquitoAgent : MonoBehaviour
     /// </summary>
     private void Move()
     {
+        // No task in stack
+        if (mTargetStack.Count == 0)
+        {
+            CurrentTask = Task.Idle;
+            return;
+        }
+
+        mTarget = CurrentTarget;
+
+        if (!mFleeing &&
+        Vector3.Distance(transform.position, mTarget) <= arriveDistance)
+        {
+            CompleteCurrentTarget();
+            return;
+        }
+
+        // Has a task -> delegate 
         if (mFleeing)
         {
             Flee();
         }
-        else if (Vector3.Distance(transform.position, mTarget) <= arriveDistance)
+        else if (mAgent.remainingDistance <= arriveDistance)
         {
             Arrive();
         }
@@ -140,11 +180,27 @@ public class MosquitoAgent : MonoBehaviour
         // Keep the NavMeshAgent synchronized with our manually
         // controlled position so it can continue calculating paths.
         mAgent.nextPosition = transform.position;
+            Mathf.Clamp(transform.position.y, minHeight, maxHeight);
 
         if (mVelocity.sqrMagnitude > 0.001f)
         {
             transform.forward = mVelocity.normalized;
         }
+    }
+
+    private void CompleteCurrentTarget()
+    {
+        mTargetStack.Pop();
+
+        if (mTargetStack.Count == 0)
+        {
+            CurrentTask = Task.Idle;
+            return;
+        }
+
+        // A previous target still exists.
+        // Recalculate the path from the mosquito's new position.
+        CurrentTask = Task.Pathfinding;
     }
 
     #endregion
@@ -160,23 +216,48 @@ public class MosquitoAgent : MonoBehaviour
     {
         Vector3 desiredVelocity = mAgent.desiredVelocity;
 
-        if (desiredVelocity.sqrMagnitude <= 0.001f)
-            return;
+        if (desiredVelocity.sqrMagnitude <= 0.001f) return;
 
-        desiredVelocity =
-            desiredVelocity.normalized * moveSpeed;
+        desiredVelocity = desiredVelocity.normalized * moveSpeed;
 
-        Vector3 steering =
-            desiredVelocity - mVelocity;
+        Vector3 steering = desiredVelocity - mVelocity;
 
         steering = Vector3.ClampMagnitude(
             steering,
             mMaxForce);
 
-        Vector3 acceleration =
-            steering / mMass;
+        Vector3 acceleration = steering / mMass;
 
-        mVelocity += acceleration * Time.deltaTime;
+        mVelocity += (acceleration + Jitter()) * Time.deltaTime;
+    }
+
+    /// <summary>
+    /// Adds a jitter behavior to the mosquitos movement
+    /// </summary>
+    /// <returns>jitter force</returns>
+    private Vector3 Jitter()
+    {
+        if (mAgent == null) return Vector3.zero;
+
+        // Update the time and target
+        timeSinceLastJitter += Time.deltaTime;
+        if(timeSinceLastJitter >= jitterChangeInterval)
+        {
+            timeSinceLastJitter = 0;
+            jitterTarget = Random.insideUnitSphere * jitterRadius;
+        }
+        jitterTarget = jitterTarget.normalized * jitterRadius;
+
+        // Find the world position
+        Vector3 targetWorld =
+            mAgent.gameObject.transform.position + jitterTarget;
+
+        // returns the calculated steering force
+        Vector3 steeringForce = 
+            (targetWorld - mAgent.gameObject.transform.position).normalized * jitterForce;
+        steeringForce.y = 0;
+        Debug.DrawRay(mAgent.gameObject.transform.position, steeringForce, Color.red);
+        return steeringForce;
     }
 
     /// <summary>
@@ -279,14 +360,60 @@ public class MosquitoAgent : MonoBehaviour
     #region PUBLIC TASK INTERFACE
 
     /// <summary>
+    /// Gives external systems temporary control of the mosquito.
+    /// The current task state is saved so it can be resumed later.
+    /// </summary>
+    public void BeginExternalControl()
+    {
+        if (mExternallyControlled) return;
+
+        // Save the current task state.
+        mPreviousTask = CurrentTask;
+        mPreviousTarget = mTarget;
+        mPreviousFleeing = mFleeing;
+
+        // Stop the agent from controlling movement.
+        mVelocity = Vector3.zero;
+        mExternalVelocity = Vector3.zero;
+
+        mExternallyControlled = true;
+    }
+
+    /// <summary>
+    /// Returns control to the mosquito's normal AI.
+    /// The previous task is resumed from the mosquito's new position.
+    /// </summary>
+    public void EndExternalControl()
+    {
+        if (!mExternallyControlled) return;
+
+        mExternallyControlled = false;
+
+        // Restore the task state.
+        CurrentTask = mPreviousTask;
+        mTarget = mPreviousTarget;
+        mFleeing = mPreviousFleeing;
+
+        // The external controller may have moved the mosquito,
+        // so synchronize the NavMeshAgent with its new position.
+        mAgent.nextPosition = transform.position;
+
+        // A new path is required because our position may have changed.
+        if (CurrentTask == Task.Move ||
+            CurrentTask == Task.Pathfinding)
+        {
+            CurrentTask = Task.Pathfinding;
+        }
+    }
+
+    /// <summary>
     /// Simple move to behavior 
     /// </summary>
     /// <param name="target"></param>
     public void MoveTo(Vector3 target)
     {
-        mTarget = target;
+        mTargetStack.Push(target);
         mFleeing = false;
-
         CurrentTask = Task.Pathfinding;
     }
 
@@ -298,7 +425,6 @@ public class MosquitoAgent : MonoBehaviour
     {
         mTarget = target;
         mFleeing = true;
-
         CurrentTask = Task.Pathfinding;
     }
 

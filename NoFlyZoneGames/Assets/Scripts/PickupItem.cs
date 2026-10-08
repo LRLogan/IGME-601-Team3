@@ -42,6 +42,9 @@ public class PickupItem : MonoBehaviour
     {
         isHeld = true;
 
+        // When hoolding, immediately turn off the item
+        SetEffectsActive(false);
+
         if (rb != null)
         {
             // Stop physics from controlling the object while it is held.
@@ -57,6 +60,19 @@ public class PickupItem : MonoBehaviour
         // Position and rotate the item relative to the hold point.
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
+    }
+
+    // Check if the interacted item has IItemEffect interface
+    // Turn the item off when picked up
+    private void SetEffectsActive(bool active)
+    {
+        foreach (MonoBehaviour component in GetComponentsInChildren<MonoBehaviour>(true))
+        {
+            if (component is IItemEffect effect)
+            {
+                effect.SetEffectActive(active);
+            }
+        }
     }
 
     /// <summary>
@@ -80,5 +96,8 @@ public class PickupItem : MonoBehaviour
             rb.isKinematic = false;
             rb.detectCollisions = true;
         }
+
+        // After placed the item, set item to active
+        SetEffectsActive(true);
     }
 }
