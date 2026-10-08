@@ -113,7 +113,12 @@ public class PlayerInteraction : MonoBehaviour
         );
 
         // Do not pick anything up if the object is out of interaction range.
-        if (!Physics.Raycast(ray, out RaycastHit hit, interactionRange))
+        if (!Physics.Raycast(
+            ray, 
+            out RaycastHit hit, 
+            interactionRange,
+            Physics.DefaultRaycastLayers,
+            QueryTriggerInteraction.Ignore))
         {
             return;
         }
@@ -126,12 +131,6 @@ public class PlayerInteraction : MonoBehaviour
         {
             return;
         }
-
-        // Store the item before creating the preview.
-        heldItem = item;
-
-        // Create the preview while the real item is still in its original state.
-        CreatePlacementPreview();
 
         // Cache on pickup
         heldItem = item;
