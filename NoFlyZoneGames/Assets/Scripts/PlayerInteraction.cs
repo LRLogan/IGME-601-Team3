@@ -21,6 +21,9 @@ public class PlayerInteraction : MonoBehaviour
     // Small offset to prevent the item from slightly clipping into the surface.
     [SerializeField] private float placementPadding = 0.01f;
 
+    // Extra space kept between a placed item and the player's colliders.
+    [SerializeField] private float playerClearance = 0.05f;
+
     [Header("Preview")]
     [SerializeField] private Material validPreviewMaterial;
     [SerializeField] private Material invalidPreviewMaterial;
@@ -184,6 +187,13 @@ public class PlayerInteraction : MonoBehaviour
         {
             Destroy(pickupItem);
         }
+
+        MonoBehaviour[] monoBehaviours = preview.GetComponentsInChildren<MonoBehaviour>();
+
+        foreach(MonoBehaviour monoBehaviour in monoBehaviours)
+        {
+            Destroy(monoBehaviour);
+        }
     }
 
     /// <summary>
@@ -228,15 +238,30 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        // Keep the item's horizontal rotation while keeping it upright.
-        Vector3 euler = heldItem.transform.eulerAngles;
-        placementRotation = Quaternion.Euler(0f, euler.y, 0f);
+        // Face the same horizontal direction as the camera while staying upright.
+        Vector3 flatForward = Vector3.ProjectOnPlane(
+            playerCamera.transform.forward,
+            Vector3.up);
+
+        // Looking straight down: the camera's up vector points the way we face.
+        if (flatForward.sqrMagnitude < 0.001f)
+        {
+            flatForward = Vector3.ProjectOnPlane(
+                playerCamera.transform.up,
+                Vector3.up);
+        }
+
+        placementRotation = Quaternion.LookRotation(
+            flatForward.normalized,
+            Vector3.up);
 
         // Calculate the item's position on the surface.
         placementPosition = GetPlacementPosition(hit);
 
         // Check the surface, placement radius, and available space.
-        canPlace = CheckPlacement(hit) && !CheckForObjectCollision();
+        canPlace = CheckPlacement(hit) &&
+                   !CheckForObjectCollision() &&
+                   !OverlapsPlayer();
 
         // Update and show the preview.
         UpdatePreview();
@@ -249,26 +274,117 @@ public class PlayerInteraction : MonoBehaviour
     /// <returns>The calculated world position for the held item.</returns>
     private Vector3 GetPlacementPosition(RaycastHit hit)
     {
+        return hit.point + Vector3.up * (GetBottomOffset() + placementPadding);
+    }
+
+    /// <summary>
+    /// Returns the axis-aligned bounds the held collider would have if the item
+    /// were rotated to the placement rotation, expressed relative to the item's
+    /// pivot. Box colliders are handled exactly (any offset, rotation or scale);
+    /// other collider types use their current bounds as an approximation.
+    /// </summary>
+    private Bounds GetPlacedBoundsRelativeToPivot()
+    {
+        Vector3 center;
+        Vector3 halfX, halfY, halfZ;
+
+        if (heldCollider is BoxCollider box)
+        {
+            Transform t = box.transform;
+            Vector3 half = box.size * 0.5f;
+
+            center = t.TransformPoint(box.center);
+            halfX = t.TransformVector(half.x, 0f, 0f);
+            halfY = t.TransformVector(0f, half.y, 0f);
+            halfZ = t.TransformVector(0f, 0f, half.z);
+        }
+        else
+        {
+            Bounds b = heldCollider.bounds;
+
+            center = b.center;
+            halfX = new Vector3(b.extents.x, 0f, 0f);
+            halfY = new Vector3(0f, b.extents.y, 0f);
+            halfZ = new Vector3(0f, 0f, b.extents.z);
+        }
+
+        // Rotate from the current (held) pose to the placement pose.
+        Quaternion delta = placementRotation *
+            Quaternion.Inverse(heldItem.transform.rotation);
+
+        halfX = delta * halfX;
+        halfY = delta * halfY;
+        halfZ = delta * halfZ;
+
+        // The AABB of a rotated box is the sum of its rotated half-axes.
+        Vector3 extents = new Vector3(
+            Mathf.Abs(halfX.x) + Mathf.Abs(halfY.x) + Mathf.Abs(halfZ.x),
+            Mathf.Abs(halfX.y) + Mathf.Abs(halfY.y) + Mathf.Abs(halfZ.y),
+            Mathf.Abs(halfX.z) + Mathf.Abs(halfY.z) + Mathf.Abs(halfZ.z)
+        );
+
+        return new Bounds(
+            delta * (center - heldItem.transform.position),
+            extents * 2f
+        );
+    }
+
+    /// <summary>
+    /// Returns how far the item's pivot sits above the bottom of its collider
+    /// once the item is rotated to the placement rotation. This does not depend
+    /// on how the item is currently tilted in the player's hands.
+    /// </summary>
+    private float GetBottomOffset()
+    {
         if (heldCollider == null)
         {
-            return hit.point + Vector3.up * placementPadding;
+            return 0f;
         }
 
-        // Only use the box math when the collider is on the item's root.
-        // A box on a child can be offset from the pivot, which this math ignores.
-        if (heldCollider is BoxCollider boxCollider &&
-            boxCollider.transform == heldItem.transform)
+        return -GetPlacedBoundsRelativeToPivot().min.y;
+    }
+
+    /// <summary>
+    /// Returns the world-space bounds the held collider would occupy if the
+    /// item were placed at the current placement position and rotation.
+    /// </summary>
+    private Bounds GetPlacedBounds()
+    {
+        Bounds local = GetPlacedBoundsRelativeToPivot();
+
+        return new Bounds(placementPosition + local.center, local.size);
+    }
+
+    /// <summary>
+    /// Checks whether the item would be placed on or inside the player.
+    /// </summary>
+    /// <returns>True if the placement location overlaps the player.</returns>
+    private bool OverlapsPlayer()
+    {
+        if (heldCollider == null)
         {
-            float localBottom = boxCollider.center.y - boxCollider.size.y * 0.5f;
-            float bottomOffset = -localBottom * heldItem.transform.lossyScale.y;
-
-            return hit.point + Vector3.up * (bottomOffset + placementPadding);
+            return false;
         }
 
-        float fallbackOffset = 
-            heldItem.transform.position.y - heldCollider.bounds.min.y;
+        Bounds placed = GetPlacedBounds();
+        placed.Expand(playerClearance * 2f);
 
-        return hit.point + Vector3.up * (fallbackOffset + placementPadding);
+        foreach (Collider col in GetComponentsInChildren<Collider>())
+        {
+            // The held item is parented under the player, so skip its colliders.
+            if (!col.enabled || col.isTrigger ||
+                col.transform.IsChildOf(heldItem.transform))
+            {
+                continue;
+            }
+
+            if (placed.Intersects(col.bounds))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
