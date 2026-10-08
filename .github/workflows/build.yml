@@ -14,22 +14,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          lfs: true # use true if your repo has Unity assets tracked by LFS
+          lfs: true
 
-      # Cache the Unity Library folder for faster builds
       - name: Cache Library folder
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: NoFlyZoneGames/Library
           key: Library-${{ hashFiles('NoFlyZoneGames/Assets/**', 'NoFlyZoneGames/Packages/**', 'NoFlyZoneGames/ProjectSettings/**') }}
           restore-keys: |
             Library-
 
-      # Build the project
       - name: Build project for Windows
         uses: game-ci/unity-builder@v4
         env:
@@ -43,7 +40,6 @@ jobs:
           buildsPath: build
           versioning: None
 
-      # Upload the built artifact
       - name: Upload Windows Build Artifact
         uses: actions/upload-artifact@v4
         with:
