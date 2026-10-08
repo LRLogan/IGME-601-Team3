@@ -44,6 +44,12 @@ public class MosquitoAgent : MonoBehaviour
     private float timeSinceLastJitter = 0f;
     private Vector3 jitterTarget;
 
+    // External control vars
+    private bool mExternallyControlled;
+    private Task mPreviousTask;
+    private Vector3 mPreviousTarget;
+    private bool mPreviousFleeing;
+
     private void Awake()
     {
         mAgent = GetComponent<NavMeshAgent>();
@@ -60,6 +66,9 @@ public class MosquitoAgent : MonoBehaviour
 
     private void Update()
     {
+        // Checks for external control
+        if (mExternallyControlled) return;
+
         // Delegates a task to its respective behavior 
         switch (CurrentTask)
         {
@@ -311,6 +320,53 @@ public class MosquitoAgent : MonoBehaviour
     #endregion
 
     #region PUBLIC TASK INTERFACE
+
+    /// <summary>
+    /// Gives external systems temporary control of the mosquito.
+    /// The current task state is saved so it can be resumed later.
+    /// </summary>
+    public void BeginExternalControl()
+    {
+        if (mExternallyControlled) return;
+
+        // Save the current task state.
+        mPreviousTask = CurrentTask;
+        mPreviousTarget = mTarget;
+        mPreviousFleeing = mFleeing;
+
+        // Stop the agent from controlling movement.
+        mVelocity = Vector3.zero;
+        mExternalVelocity = Vector3.zero;
+
+        mExternallyControlled = true;
+    }
+
+    /// <summary>
+    /// Returns control to the mosquito's normal AI.
+    /// The previous task is resumed from the mosquito's new position.
+    /// </summary>
+    public void EndExternalControl()
+    {
+        if (!mExternallyControlled) return;
+
+        mExternallyControlled = false;
+
+        // Restore the task state.
+        CurrentTask = mPreviousTask;
+        mTarget = mPreviousTarget;
+        mFleeing = mPreviousFleeing;
+
+        // The external controller may have moved the mosquito,
+        // so synchronize the NavMeshAgent with its new position.
+        mAgent.nextPosition = transform.position;
+
+        // A new path is required because our position may have changed.
+        if (CurrentTask == Task.Move ||
+            CurrentTask == Task.Pathfinding)
+        {
+            CurrentTask = Task.Pathfinding;
+        }
+    }
 
     /// <summary>
     /// Simple move to behavior 
