@@ -44,6 +44,37 @@ public class PlayerInteraction : MonoBehaviour
     // Determines whether the current placement position is valid.
     private bool canPlace;
 
+    // Public read-only interaction state
+    public bool IsHoldingItem => heldItem != null;
+
+    public bool CanPlaceHeldItem => heldItem != null && canPlace;
+
+    public bool CanPickUpItem()
+    {
+        if (heldItem != null || playerCamera == null)
+            return false;
+
+        Ray ray = new Ray(
+            playerCamera.transform.position,
+            playerCamera.transform.forward
+        );
+
+        if (!Physics.Raycast(
+            ray,
+            out RaycastHit hit,
+            interactionRange,
+            Physics.DefaultRaycastLayers,
+            QueryTriggerInteraction.Ignore))
+        {
+            return false;
+        }
+
+        PickupItem item =
+            hit.collider.GetComponentInParent<PickupItem>();
+
+        return item != null && !item.IsHeld;
+    }
+
     private void OnEnable()
     {
         // Enable the interaction input action when this component is active.
