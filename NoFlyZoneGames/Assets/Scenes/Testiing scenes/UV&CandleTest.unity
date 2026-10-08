@@ -683,6 +683,11 @@ MonoBehaviour:
   mMass: 1
   mMaxSpeed: 3
   mMaxForce: 10
+  maxHeight: 1
+  minHeight: 10
+  jitterRadius: 0.5
+  jitterForce: 0.5
+  jitterChangeInterval: 2
   externalDrag: 2
 --- !u!195 &546905661
 NavMeshAgent:
@@ -838,6 +843,10 @@ PrefabInstance:
       propertyPath: attractionPoint
       value: 
       objectReference: {fileID: 999862428}
+    - target: {fileID: 4441847167900697662, guid: 9186f82bb21f43e45beb7bb6d9844dee, type: 3}
+      propertyPath: releasePointRad
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 4452636393673566342, guid: 9186f82bb21f43e45beb7bb6d9844dee, type: 3}
       propertyPath: m_LocalScale.x
       value: 8
@@ -896,6 +905,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7359833117268398521, guid: 9186f82bb21f43e45beb7bb6d9844dee, type: 3}
+    - {fileID: 8564741526140117172, guid: 9186f82bb21f43e45beb7bb6d9844dee, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:

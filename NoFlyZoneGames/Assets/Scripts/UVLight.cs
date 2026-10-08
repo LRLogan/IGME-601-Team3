@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UVLight : MonoBehaviour
@@ -23,10 +24,12 @@ public class UVLight : MonoBehaviour
         public bool released;
     }
     */
+    [SerializeField] private float releasePointRad = 0.5f;
 
     void Update()
     {
-        // Test utility: releasing mosquito
+        // Releasing mosquito once it has reached the desired point
+        /*
         if (releaseMosquito)
         {
             foreach (MosquitoAgent mosquito in affectedMosquito)
@@ -40,7 +43,26 @@ public class UVLight : MonoBehaviour
             releaseMosquito = false;
             return;
         }
+        */
 
+        // Checking each mosquito in the effected list
+        for (int i = affectedMosquito.Count - 1; i >= 0; i--)
+        {
+            MosquitoAgent mosquito = affectedMosquito[i];
+
+            if (mosquito == null)
+            {
+                affectedMosquito.RemoveAt(i);
+                continue;
+            }
+
+            if (Vector3.Distance(
+                mosquito.transform.position,
+                attractionPoint.position) <= releasePointRad)
+            {
+                affectedMosquito.RemoveAt(i);
+            }
+        }
     }
 
     // Detect Mosquito entering UV light's area of effect, and get the mosquito
@@ -90,5 +112,6 @@ public class UVLight : MonoBehaviour
                 mosquito.MoveTo(releasePoint.position);
             }
         }
+        affectedMosquito.Clear();
     }
 }
