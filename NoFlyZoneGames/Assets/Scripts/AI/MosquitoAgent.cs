@@ -22,19 +22,27 @@ public class MosquitoAgent : MonoBehaviour
     [SerializeField] private float mMass = 1f;
     [SerializeField] private float mMaxSpeed = 3f;
     [SerializeField] private float mMaxForce = 10f;
+    [SerializeField] private float maxHeight = 1f;
+    [SerializeField] private float minHeight = 10f;
+    [SerializeField] private float jitterRadius = 0.5f;
+    [SerializeField] private float jitterForce = 0.5f;
+
+    [Tooltip("Time in seconds")]
+    [SerializeField] private float jitterChangeInterval = 2f;
 
     [Header("External Forces")]
     [SerializeField] private float externalDrag = 2f;
 
-    [Header("Misc")]
     public Task CurrentTask { get; private set; }
 
+    // --- Internal references ---
     private NavMeshAgent mAgent;
-
     private Vector3 mTarget;
     private Vector3 mVelocity;
     private Vector3 mExternalVelocity;
     private bool mFleeing;
+    private float timeSinceLastJitter = 0f;
+    private Vector3 jitterTarget;
 
     private void Awake()
     {
@@ -140,6 +148,7 @@ public class MosquitoAgent : MonoBehaviour
         // Keep the NavMeshAgent synchronized with our manually
         // controlled position so it can continue calculating paths.
         mAgent.nextPosition = transform.position;
+            Mathf.Clamp(transform.position.y, minHeight, maxHeight);
 
         if (mVelocity.sqrMagnitude > 0.001f)
         {
@@ -160,23 +169,48 @@ public class MosquitoAgent : MonoBehaviour
     {
         Vector3 desiredVelocity = mAgent.desiredVelocity;
 
-        if (desiredVelocity.sqrMagnitude <= 0.001f)
-            return;
+        if (desiredVelocity.sqrMagnitude <= 0.001f) return;
 
-        desiredVelocity =
-            desiredVelocity.normalized * moveSpeed;
+        desiredVelocity = desiredVelocity.normalized * moveSpeed;
 
-        Vector3 steering =
-            desiredVelocity - mVelocity;
+        Vector3 steering = desiredVelocity - mVelocity;
 
         steering = Vector3.ClampMagnitude(
             steering,
             mMaxForce);
 
-        Vector3 acceleration =
-            steering / mMass;
+        Vector3 acceleration = steering / mMass;
 
-        mVelocity += acceleration * Time.deltaTime;
+        mVelocity += (acceleration + Jitter()) * Time.deltaTime;
+    }
+
+    /// <summary>
+    /// Adds a jitter behavior to the mosquitos movement
+    /// </summary>
+    /// <returns>jitter force</returns>
+    private Vector3 Jitter()
+    {
+        if (mAgent == null) return Vector3.zero;
+
+        // Update the time and target
+        timeSinceLastJitter += Time.deltaTime;
+        if(timeSinceLastJitter >= jitterChangeInterval)
+        {
+            timeSinceLastJitter = 0;
+            jitterTarget = Random.insideUnitSphere * jitterRadius;
+        }
+        jitterTarget = jitterTarget.normalized * jitterRadius;
+
+        // Find the world position
+        Vector3 targetWorld =
+            mAgent.gameObject.transform.position + jitterTarget;
+
+        // returns the calculated steering force
+        Vector3 steeringForce = 
+            (targetWorld - mAgent.gameObject.transform.position).normalized * jitterForce;
+        steeringForce.y = 0;
+        Debug.DrawRay(mAgent.gameObject.transform.position, steeringForce, Color.red);
+        return steeringForce;
     }
 
     /// <summary>

@@ -394,7 +394,7 @@ Transform:
   m_GameObject: {fileID: 423622545}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.2, y: 1.9, z: -12.5}
+  m_LocalPosition: {x: -6.53, y: 1.9, z: -12.24}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -509,8 +509,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 10.13, y: 1.8, z: 12.4}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1993887756}
   m_Father: {fileID: 0}
@@ -527,12 +527,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1af1e698d4d6ef4db56589802cedbb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MosquitoAgent
-  moveSpeed: 3
-  arriveDistance: 2
+  moveSpeed: 2
+  arriveDistance: 1
   fleeDistance: 5
   mMass: 1
   mMaxSpeed: 3
   mMaxForce: 10
+  maxHeight: 10
+  minHeight: 10
+  jitterRadius: 0.75
+  jitterForce: 1.5
+  jitterChangeInterval: 0.15
   externalDrag: 2
 --- !u!195 &546905661
 NavMeshAgent:
