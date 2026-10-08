@@ -6,18 +6,19 @@ public class UVLight : MonoBehaviour
     // Test utility: manually release the mosquito
     [Header("Setting below to manually release the mosquito")]
     [SerializeField] bool releaseMosquito;
-    // Stop the mosquito from clipping into the UV Light object
-    [SerializeField] float stopRange = 1f;
-    // Duration of UV Light attraction on the mosquito
-    [SerializeField] float attractionDuration = 5f;
-    // Speed of attracted mosquito toward the UV light
-    [SerializeField] float attractionSpeed = 1f;
+    // Set a reachable point on the NavMesh near the light in Inspector
+    [SerializeField] Transform attractionPoint;
+    // Set a release point on the NavMesh. Right now mosquito can only be manually released
+    // And it won't return Mosquito to it's original task/destination
+    [SerializeField] Transform releasePoint;
+    // TODO: Duration of UV Light attraction on the mosquito
+    // [SerializeField] float attractionDuration = 5f;
     // Put mosquito in range into a list
-    List<UVTestMosquito> affectedMosquito = new List<UVTestMosquito>();
+    List<MosquitoAgent> affectedMosquito = new List<MosquitoAgent>();
     /* TODO: Implement attraction duration and release mosquito after effect ends
     class AttractionState
     {
-        public UVTestMosquito mosquito;
+        public MosquitoAgent mosquito;
         public float remainingTime;
         public bool released;
     }
@@ -25,21 +26,14 @@ public class UVLight : MonoBehaviour
 
     void Update()
     {
-        foreach (UVTestMosquito mosquito in affectedMosquito)
-        {
-            if (mosquito != null)
-            {
-                UVAttraction(mosquito);
-            }
-        }
         // Test utility: releasing mosquito
         if (releaseMosquito)
         {
-            foreach (UVTestMosquito mosquito in affectedMosquito)
+            foreach (MosquitoAgent mosquito in affectedMosquito)
             {
                 if (mosquito != null)
                 {
-                    mosquito.EndExternalControl();
+                    mosquito.MoveTo(releasePoint.position);
                 }
             }
             affectedMosquito.Clear();
@@ -52,47 +46,36 @@ public class UVLight : MonoBehaviour
     // Detect Mosquito entering UV light's area of effect, and get the mosquito
     void OnTriggerEnter(Collider other)
     {
+        // Debug message for UV range detection
+        Debug.Log($"UV trigger detected: {other.name}: {other.tag}", this);
         if (!other.CompareTag("Mosquito"))
         {
             return;
         }
-        UVTestMosquito mosquito = other.GetComponent<UVTestMosquito>();
+        MosquitoAgent mosquito = other.GetComponent<MosquitoAgent>();
         // Ignore if no mosquito around, or mosquito already in the list
         if (mosquito == null || affectedMosquito.Contains(mosquito))
         {
             return;
         }
-        affectedMosquito.Add(mosquito);
-        // Switch movement control to the UV Light
-        mosquito.BeginExternalControl();
-        Debug.Log("Mosquito has entered effective range.");
-
-    }
-
-    void UVAttraction(UVTestMosquito mosquito)
-    {
-        Rigidbody mosBody = mosquito.GetComponent<Rigidbody>();
-        if (mosBody == null)
+        // Check if the attraction point has been set yet
+        if (attractionPoint == null)
         {
+            Debug.LogWarning("Assign an attraction point to the UV light.", this);
             return;
         }
-        float distanceToLight = Vector3.Distance(mosBody.position, transform.position);
-        // Calculate how the mosquito would move toward the UV light
-        if (distanceToLight > stopRange)
-        {
-            float step = Mathf.Min(attractionSpeed * Time.fixedDeltaTime, distanceToLight - stopRange);
-            Vector3 nextPos = Vector3.MoveTowards(mosBody.position, transform.position, step);
-            mosBody.MovePosition(nextPos);
-        }
+        affectedMosquito.Add(mosquito);
+        // Request the mosquito to move toward the UV attraction point
+        mosquito.MoveTo(attractionPoint.position);
     }
+
 
     // Detect Mosquito leaving UV light's area of effect, end UV Light's control over it
     void OnTriggerExit(Collider other)
     {
-        UVTestMosquito mosquito = other.GetComponent<UVTestMosquito>();
+        MosquitoAgent mosquito = other.GetComponent<MosquitoAgent>();
         if (mosquito != null && affectedMosquito.Remove(mosquito))
         {
-            mosquito.EndExternalControl();
             Debug.Log("Mosquito has exited effective range");
         }
     }
@@ -100,11 +83,11 @@ public class UVLight : MonoBehaviour
     // Release all mosquitos if the UV light is removed or disabled
     void OnDisable()
     {
-        foreach (UVTestMosquito mosquito in affectedMosquito)
+        foreach (MosquitoAgent mosquito in affectedMosquito)
         {
             if (mosquito != null)
             {
-                mosquito.EndExternalControl();
+                mosquito.MoveTo(releasePoint.position);
             }
         }
     }
