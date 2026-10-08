@@ -1,7 +1,8 @@
 using UnityEngine;
 
-public class Fan : MonoBehaviour
+public class Fan : MonoBehaviour, IItemEffect
 {
+    private bool effectActive = true;
     private string itemName;
     private float radius;
     private float strength;
@@ -22,6 +23,10 @@ public class Fan : MonoBehaviour
 
     public void OnTriggerStay(Collider other)
     {
+        if (!effectActive)
+        {
+            return;
+        }
 
         if (other.CompareTag("Mosquito"))
         {
@@ -49,6 +54,12 @@ public class Fan : MonoBehaviour
     /// <param name="mosquito"></param>
     public void Push(MosquitoAgent mosquito)
     {
+        // Switching off stops adding new force, but doesn't erase the force already applied
+        if (!effectActive)
+        {
+            return;
+        }
+
         // Get the push direction away from the fan.
         Vector3 direction = Vector3.forward;
         direction.Normalize();
@@ -56,5 +67,16 @@ public class Fan : MonoBehaviour
         mosquito.AddForce(
             direction * strength,
             ForceMode.Force);
+    }
+
+    // Utilize the item effect interface to turn the fan on and off
+    public void SetEffectActive(bool active)
+    {
+        if (effectActive == active)
+        {
+            return;
+        }
+
+        effectActive = active;
     }
 }

@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Candle : MonoBehaviour
+public class Candle : MonoBehaviour, IItemEffect
 {
+    // Utilize the interface
+    private bool effectActive = true;
+
     // Set the inner radius of Candle's area of effect
     // The outer radius is controlled by the sphere collider
     // When a mosquito touches inner radius, it is repelled
@@ -28,6 +31,12 @@ public class Candle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // If the item is not active, do nothing
+        if (!effectActive)
+        {
+            return;
+        }
+
         foreach (MosquitoAgent mosquito in mosquitoInRange)
         {
             if (mosquito != null)
@@ -37,10 +46,37 @@ public class Candle : MonoBehaviour
         }
     }
 
-    // Attempt to repel the mosquito once it gets inside the collider
-    void OnTriggerEnter(Collider other)
+    // Interface method to control effect activate/deactivate
+    public void SetEffectActive(bool active)
     {
-        Debug.Log($"Candle trigger detected: {other.name}: {other.tag}", this);
+        // If the status of the item doesn't change, no transition, return immediately
+        if (effectActive == active)
+        {
+            return;
+        }
+
+        // Store the requested state as the new current state
+        effectActive = active;
+
+        // If the candle is switched off, forget all tracked mosquitos and their 'already repelled' status
+        if (!active)
+        {
+            mosquitoInRange.Clear();
+            repelledMosquito.Clear();
+        }
+
+    }
+
+    // Refac into a helper function to check for the situation of checking an existing overlap
+    // i.e. if the mosquito is already in range when the candle is inactive
+    // Attempt to repel the mosquito once it gets inside the collider
+    void TryRegisterMosquito(Collider other)
+    {
+        if (!effectActive)
+        {
+            return;
+        }
+
         if (!other.CompareTag("Mosquito"))
         {
             return;
@@ -54,8 +90,23 @@ public class Candle : MonoBehaviour
         Debug.Log("Mosquito has entered effective range");
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        TryRegisterMosquito(other);
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        TryRegisterMosquito(other);
+    }
+
     void Repel(MosquitoAgent mosquito)
     {
+        if (!effectActive)
+        {
+            return;
+        }
+
         // Check if the mosquito has already been repelled
         if (repelledMosquito.Contains(mosquito))
         {

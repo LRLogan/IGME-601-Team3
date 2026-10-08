@@ -1,12 +1,17 @@
 using UnityEngine;
 
-public class Zapper : MonoBehaviour
+public class Zapper : MonoBehaviour, IItemEffect
 {
+    private bool effectActive = true;
     [SerializeField]
     private float damage = 25f;
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!effectActive)
+        {
+            return;
+        }
         if (other.CompareTag("Mosquito"))
         {
             MosquitoHealth health = other.GetComponent<MosquitoHealth>();
@@ -28,6 +33,16 @@ public class Zapper : MonoBehaviour
     {
         transform.SetParent(null);
         transform.position = position;
+    }
+
+    public void SetEffectActive(bool active)
+    {
+        if (effectActive == active)
+        {
+            return;
+        }
+
+        effectActive = active;
     }
 
 }

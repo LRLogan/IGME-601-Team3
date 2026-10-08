@@ -2,8 +2,11 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class UVLight : MonoBehaviour
+public class UVLight : MonoBehaviour, IItemEffect
 {
+    // Utilize the interface
+    private bool effectActive = true;
+
     // Test utility: manually release the mosquito
     [Header("Setting below to manually release the mosquito")]
     [SerializeField] bool releaseMosquito;
@@ -28,6 +31,10 @@ public class UVLight : MonoBehaviour
 
     void Update()
     {
+        if (!effectActive)
+        {
+            return;
+        }
         // Releasing mosquito once it has reached the desired point
         /*
         if (releaseMosquito)
@@ -66,10 +73,14 @@ public class UVLight : MonoBehaviour
     }
 
     // Detect Mosquito entering UV light's area of effect, and get the mosquito
-    void OnTriggerEnter(Collider other)
+    void TryRegisterMosquito(Collider other)
     {
-        // Debug message for UV range detection
-        Debug.Log($"UV trigger detected: {other.name}: {other.tag}", this);
+        if (!effectActive)
+        {
+            return;
+        }
+
+
         if (!other.CompareTag("Mosquito"))
         {
             return;
@@ -89,6 +100,8 @@ public class UVLight : MonoBehaviour
         affectedMosquito.Add(mosquito);
         // Request the mosquito to move toward the UV attraction point
         mosquito.MoveTo(attractionPoint.position);
+        // Debug message
+        Debug.Log($"Attracted: {other.name}: {other.tag}", this);
     }
 
 
@@ -102,9 +115,44 @@ public class UVLight : MonoBehaviour
         }
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        TryRegisterMosquito(other);
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        TryRegisterMosquito(other);
+    }
+
     // Release all mosquitos if the UV light is removed or disabled
     void OnDisable()
     {
+        EndCurrentEffects();
+    }
+
+    // Using IItemEffect interface
+    public void SetEffectActive(bool active)
+    {
+        if (effectActive == active)
+        {
+            return;
+        }
+
+        effectActive = active;
+
+        if (!active)
+        {
+            EndCurrentEffects();
+        }
+    }
+
+    private void EndCurrentEffects()
+    {
+        // TODO: Cancel this UV light's pending attraction request
+        // through MosquitoAgent once cancellation is supported
+        // Right now, clearing the list does NOT cancel the AI destination
+
         foreach (MosquitoAgent mosquito in affectedMosquito)
         {
             if (mosquito != null)
