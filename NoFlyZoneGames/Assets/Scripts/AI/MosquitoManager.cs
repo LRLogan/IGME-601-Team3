@@ -19,11 +19,6 @@ public class MosquitoManager : MonoBehaviour
                 FindObjectsSortMode.None));
     }
 
-    public void AddMosquito(MosquitoAgent agent)
-    {
-        mosquitoes.Add(agent);
-    }
-
     #region Public acess point controls
     public void SetAllTask(MosquitoAgent.Task task)
     {
@@ -39,6 +34,19 @@ public class MosquitoManager : MonoBehaviour
         {
             mosquito.MoveTo(target);
         }
+    }
+
+    public void MoveCollectionTo(List<MosquitoAgent> agents, Vector3 target)
+    {
+        foreach (MosquitoAgent mosquito in agents)
+        {
+            mosquito.MoveTo(target);
+        }
+    }
+
+    public void MoveOneTo(MosquitoAgent mosquito, Vector3 target)
+    {
+        mosquito.MoveTo(target);
     }
 
     public void FleeAllFrom(Vector3 target)
