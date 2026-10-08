@@ -6,8 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Testiing scenes/MosquitoAITests.unity
-    guid: ae97958b0c58e9b40b57e6067b5b7e4f
+    path: Assets/Scenes/Testiing scenes/GreyBoxLvl.unity
+    guid: 21230336473110a44bd99ba993c9b448
+  - enabled: 1
+    path: Assets/Scenes/Testiing scenes/UV&CandleTest.unity
+    guid: b7c5d2e832eedcf40ab1abd55ac53683
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
