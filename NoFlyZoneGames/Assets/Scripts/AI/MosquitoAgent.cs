@@ -90,6 +90,12 @@ public class MosquitoAgent : MonoBehaviour
                 Move();
                 break;
         }
+
+        // Apply external movement even when the AI is idle.
+        if (CurrentTask == Task.Idle && mExternalVelocity.sqrMagnitude > 0.001f)
+        {
+            ApplyExternalVelocity();
+        }
     }
 
     #region TASK SYSTEM
@@ -185,6 +191,22 @@ public class MosquitoAgent : MonoBehaviour
         if (mVelocity.sqrMagnitude > 0.001f)
         {
             transform.forward = mVelocity.normalized;
+        }
+    }
+
+    private void ApplyExternalVelocity()
+    {
+        transform.position += mExternalVelocity * Time.deltaTime;
+
+        mExternalVelocity = Vector3.Lerp(
+            mExternalVelocity,
+            Vector3.zero,
+            externalDrag * Time.deltaTime
+        );
+
+        if (mAgent.isOnNavMesh)
+        {
+            mAgent.nextPosition = transform.position;
         }
     }
 
