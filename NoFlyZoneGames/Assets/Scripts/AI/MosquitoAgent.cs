@@ -196,6 +196,7 @@ public class MosquitoAgent : MonoBehaviour
 
     private void ApplyExternalVelocity()
     {
+        mExternalVelocity.y = 0; // -- TEMPORARY - lock y-axis --
         transform.position += mExternalVelocity * Time.deltaTime;
 
         mExternalVelocity = Vector3.Lerp(

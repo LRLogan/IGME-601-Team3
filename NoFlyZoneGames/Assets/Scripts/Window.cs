@@ -16,11 +16,12 @@ public class Window : MonoBehaviour
     {
         
     }
-    public void OnCollisionEnter(Collision collision)
+    public void OnTriggerEnter(Collider collider)
     {
-        GameObject collisionObj = collision.gameObject;
+        GameObject collisionObj = collider.gameObject;
         if(collisionObj.CompareTag("Mosquito"))
         {
+            Debug.Log("Huzzah");
             //very hard coded for now will have functionality for multiple mosquitos
             Destroy(collisionObj);
             NextLvlButton.gameObject.SetActive(true);

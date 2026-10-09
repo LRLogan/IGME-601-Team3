@@ -1,10 +1,13 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class Fan : MonoBehaviour, IItemEffect
 {
     private bool effectActive = true;
     private string itemName;
+    [SerializeField]
     private float radius;
+    [SerializeField]
     private float strength;
 
     [SerializeField]
@@ -13,7 +16,7 @@ public class Fan : MonoBehaviour, IItemEffect
     public void Start()
     {
         itemName = "fan";
-        radius = 15.0f;
+        //radius = 15.0f;
         strength = 5f;
 
         // Change length of fan hitbox to radius size
@@ -61,7 +64,7 @@ public class Fan : MonoBehaviour, IItemEffect
         }
 
         // Get the push direction away from the fan.
-        Vector3 direction = Vector3.forward;
+        Vector3 direction = mosquito.transform.position - transform.position;
         direction.Normalize();
 
         mosquito.AddForce(
