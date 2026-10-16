@@ -18,7 +18,7 @@ public class MosquitoManager : MonoBehaviour
             FindObjectsByType<MosquitoAgent>(
                 FindObjectsSortMode.None));
 
-        //MoveAllTo(pointB.position);
+        MoveAllTo(pointB.position);
     }
 
     #region Public acess point controls
