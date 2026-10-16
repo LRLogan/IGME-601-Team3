@@ -1,11 +1,6 @@
-using JetBrains.Annotations;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
+
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -30,16 +25,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Update()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Exit the game when Escape is pressed
+        if (Keyboard.current != null &&
+            Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            QuitGame();
+        }
     }
 
     /// <summary>
@@ -48,5 +41,18 @@ public class GameManager : MonoBehaviour
     public void NewGame()
     {
         SceneManager.LoadScene(startingSceneName);
+    }
+
+    /// <summary>
+    /// Exit Play Mode in the Editor or quit the built game.
+    /// </summary>
+    public void QuitGame()
+    {
+        Application.Quit();
+
+        // If running in the Unity Editor, stop play mode
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 }
