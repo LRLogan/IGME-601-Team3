@@ -10,21 +10,37 @@ public class MosquitoManager : MonoBehaviour
 {
     [SerializeField] private Transform pointB;
 
-    private List<MosquitoAgent> mosquitoes = new();
+    private List<MosquitoAgent> activeMosquitoes = new();
+    private Stack<MosquitoAgent> mosquitoPool = new();
 
     private void Start()
     {
-        mosquitoes.AddRange(
+        activeMosquitoes.AddRange(
             FindObjectsByType<MosquitoAgent>(
                 FindObjectsSortMode.None));
 
         MoveAllTo(pointB.position);
     }
 
+    private void InstantiateMosquitos()
+    {
+        activeMosquitoes.Clear();
+    }
+
     #region Public acess point controls
+    public void SpawnMosquito()
+    {
+        // TODO: If there is a mosquito in the pool then use that, otherwise add a new one to the pool and sapwn it.
+    }
+
+    public void DespawnMosquito()
+    {
+        // TODO: Deactivate mosquito and sent it bcak to the pool
+    }
+
     public void SetAllTask(MosquitoAgent.Task task)
     {
-        foreach (MosquitoAgent mosquito in mosquitoes)
+        foreach (MosquitoAgent mosquito in activeMosquitoes)
         {
             mosquito.SetTask(task);
         }
@@ -32,7 +48,7 @@ public class MosquitoManager : MonoBehaviour
 
     public void MoveAllTo(Vector3 target)
     {
-        foreach (MosquitoAgent mosquito in mosquitoes)
+        foreach (MosquitoAgent mosquito in activeMosquitoes)
         {
             mosquito.MoveTo(target);
         }
@@ -53,21 +69,10 @@ public class MosquitoManager : MonoBehaviour
 
     public void FleeAllFrom(Vector3 target)
     {
-        foreach (MosquitoAgent mosquito in mosquitoes)
+        foreach (MosquitoAgent mosquito in activeMosquitoes)
         {
             mosquito.FleeFrom(target);
         }
-    }
-
-    public void RegisterMosquito(MosquitoAgent mosquito)
-    {
-        if (!mosquitoes.Contains(mosquito))
-            mosquitoes.Add(mosquito);
-    }
-
-    public void UnregisterMosquito(MosquitoAgent mosquito)
-    {
-        mosquitoes.Remove(mosquito);
     }
     #endregion
 }
