@@ -44,4 +44,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48ec50977d4680f4bae7a1c05243821a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MosquitoSpawner
-  mosquitoPrefab: {fileID: 3892689120871619743, guid: f55e90316190e364c88ff8bb239056db, type: 3}
+  mosquitoPrefab: {fileID: 7023963726970427512, guid: 8b45a6b6bd03e9b4ead0bda54621b886, type: 3}
