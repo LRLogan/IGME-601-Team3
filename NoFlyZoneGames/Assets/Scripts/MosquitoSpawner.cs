@@ -1,10 +1,17 @@
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
 
 public class MosquitoSpawner : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject mosquitoPrefab;
+    [Header("References")]
+    [SerializeField] private MosquitoManager mosquitoManager;
+
+    [Header("Spawn Settings")]
+    [SerializeField] private float spawnRadius = 5f;
+    [SerializeField] private float collisionRadius = 0.5f;
+    [SerializeField] private LayerMask collisionLayers;
+    [SerializeField] private int maxSpawnAttempts = 15;
 
     // temporary test hook
     private void Update()
@@ -17,21 +24,58 @@ public class MosquitoSpawner : MonoBehaviour
 
     public void SpawnMosquito()
     {
-        if (mosquitoPrefab == null)
+        if (mosquitoManager == null)
         {
-            Debug.LogWarning("Mosquito prefab is not assigned.", this);
+            Debug.LogWarning("Mosquito manager is not assigned.", this);
             return;
         }
 
-        // TODO: Spawn the mosquito in a set radius to the spawner to allow variation.
-        // Be sure to check for collisions and not spawn it in that location if so
+        for (int i = 0; i < maxSpawnAttempts; i++)
+        {
+            // Generate a random position within the spawn radius.
+            Vector2 randomOffset = Random.insideUnitCircle * spawnRadius;
 
-        Instantiate(
-            mosquitoPrefab,
-            transform.position,
-            transform.rotation
+            Vector3 candidatePosition = transform.position +
+                new Vector3(randomOffset.x, 0f, randomOffset.y);
+
+            // Find a valid nearby NavMesh position.
+            if (!NavMesh.SamplePosition(
+                candidatePosition,
+                out NavMeshHit hit,
+                1f,
+                NavMesh.AllAreas))
+            {
+                continue;
+            }
+
+            // Ensure the position is not occupied.
+            if (Physics.CheckSphere(
+                hit.position,
+                collisionRadius,
+                collisionLayers,
+                QueryTriggerInteraction.Ignore))
+            {
+                continue;
+            }
+
+            // Valid spawn location found.
+            mosquitoManager.SpawnMosquito(
+                hit.position,
+                transform.rotation
+            );
+
+            return;
+        }
+
+        Debug.LogWarning(
+            "Unable to find a valid mosquito spawn location.",
+            this
         );
+    }
 
-        // TODO: Add the mosquito to the active mosquitos list in masquito manager and remove it from the pool
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, spawnRadius);
     }
 }

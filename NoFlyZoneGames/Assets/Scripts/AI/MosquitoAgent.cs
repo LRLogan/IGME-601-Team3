@@ -506,5 +506,25 @@ public class MosquitoAgent : MonoBehaviour
             mMaxSpeed);
     }
 
+    /// <summary>
+    /// Compleatly reset the agent used when despawning / sending to object pool
+    /// </summary>
+    public void ResetAgent()
+    {
+        mTargetStack.Clear();
+
+        mVelocity = Vector3.zero;
+        mExternalVelocity = Vector3.zero;
+
+        mFleeing = false;
+        CurrentTask = Task.Idle;
+
+        if (mAgent.isOnNavMesh)
+        {
+            mAgent.ResetPath();
+            mAgent.nextPosition = transform.position;
+        }
+    }
+
     #endregion
 }
