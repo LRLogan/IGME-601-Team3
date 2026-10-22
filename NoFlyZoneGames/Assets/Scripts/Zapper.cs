@@ -1,10 +1,18 @@
 using UnityEngine;
+using System.Collections;
 
 public class Zapper : MonoBehaviour, IItemEffect
 {
     private bool effectActive = true;
     [SerializeField]
     private float damage = 25f;
+
+    [SerializeField]
+    private float cooldown;
+
+    private MosquitoHealth health;
+
+    private Coroutine zapTime;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -14,13 +22,39 @@ public class Zapper : MonoBehaviour, IItemEffect
         }
         if (other.CompareTag("Mosquito"))
         {
-            MosquitoHealth health = other.GetComponent<MosquitoHealth>();
-
-            if (health != null)
+            health = other.GetComponent<MosquitoHealth>();
+            
+            //Start coroutine
+            if(zapTime == null)
             {
-                health.TakeDamage(damage);
+                zapTime = StartCoroutine(ApplyZap(cooldown));
             }
         }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        //Good for our purposes now BUT will pose a problem with multiple mosquitoes
+        if(other.CompareTag("Mosquito"))
+        {
+            StopCoroutine(zapTime);
+
+            //make sure to set the coroutine to null to prevent multiple threads
+            zapTime = null;
+        }
+    }
+
+    public IEnumerator ApplyZap(float cool)
+    {
+        //Applies damage until it hits zero
+        while (health != null)
+        {
+            health.TakeDamage(damage);
+
+            yield return new WaitForSeconds(cool);
+        }
+        //make sure to set the coroutine to null to prevent multiple threads
+        zapTime = null;
     }
 
     public void PickUp(Transform holder)
