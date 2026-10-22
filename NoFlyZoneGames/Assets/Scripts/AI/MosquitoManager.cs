@@ -9,6 +9,8 @@ using UnityEngine;
 public class MosquitoManager : MonoBehaviour
 {
     [SerializeField] private Transform pointB;
+    [SerializeField] private GameObject mosquitoPrefab;
+    [SerializeField] private int initialPoolSize = 10;
 
     private List<MosquitoAgent> activeMosquitoes = new();
     private Stack<MosquitoAgent> mosquitoPool = new();
@@ -25,17 +27,91 @@ public class MosquitoManager : MonoBehaviour
     private void InstantiateMosquitos()
     {
         activeMosquitoes.Clear();
+        mosquitoPool.Clear();
+
+        if (mosquitoPrefab == null)
+        {
+            Debug.LogWarning("Mosquito prefab is not assigned.", this);
+            return;
+        }
+
+        for (int i = 0; i < initialPoolSize; i++)
+        {
+            GameObject instance = Instantiate(
+                mosquitoPrefab,
+                transform.position,
+                Quaternion.identity
+            );
+
+            MosquitoAgent mosquito = instance.GetComponent<MosquitoAgent>();
+
+            if (mosquito == null)
+            {
+                Debug.LogError("Mosquito prefab is missing MosquitoAgent.", this);
+                Destroy(instance);
+                continue;
+            }
+
+            mosquito.ResetAgent();
+            instance.SetActive(false);
+
+            mosquitoPool.Push(mosquito);
+        }
     }
 
     #region Public acess point controls
-    public void SpawnMosquito()
+    public MosquitoAgent SpawnMosquito(Vector3 position, Quaternion rotation)
     {
-        // TODO: If there is a mosquito in the pool then use that, otherwise add a new one to the pool and sapwn it.
+        MosquitoAgent mosquito;
+
+        if (mosquitoPool.Count > 0)
+        {
+            // Reuse an existing mosquito.
+            mosquito = mosquitoPool.Pop();
+
+            mosquito.transform.SetPositionAndRotation(position, rotation);
+            mosquito.gameObject.SetActive(true);
+        }
+        else
+        {
+            // No pooled mosquitoes available. Create a new one.
+            if (mosquitoPrefab == null)
+            {
+                Debug.LogWarning("Mosquito prefab is not assigned.", this);
+                return null;
+            }
+
+            GameObject instance = Instantiate(
+                mosquitoPrefab,
+                position,
+                rotation
+            );
+
+            mosquito = instance.GetComponent<MosquitoAgent>();
+
+            if (mosquito == null)
+            {
+                Debug.LogError("Mosquito prefab has no MosquitoAgent.", this);
+                Destroy(instance);
+                return null;
+            }
+        }
+
+        activeMosquitoes.Add(mosquito);
+
+        return mosquito;
     }
 
-    public void DespawnMosquito()
+    public void DespawnMosquito(MosquitoAgent mosquito)
     {
-        // TODO: Deactivate mosquito and sent it bcak to the pool
+        if (mosquito == null || !activeMosquitoes.Remove(mosquito))
+            return;
+
+        // Complete value reset before returning to pool
+        mosquito.ResetAgent();
+
+        mosquito.gameObject.SetActive(false);
+        mosquitoPool.Push(mosquito);
     }
 
     public void SetAllTask(MosquitoAgent.Task task)
