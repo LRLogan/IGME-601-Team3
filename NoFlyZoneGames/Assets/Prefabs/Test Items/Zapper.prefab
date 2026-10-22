@@ -177,6 +177,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Zapper
   damage: 25
+  cooldown: 1
 --- !u!114 &2159624102872726406
 MonoBehaviour:
   m_ObjectHideFlags: 0
