@@ -32,33 +32,41 @@ public class MosquitoSpawner : MonoBehaviour
 
         for (int i = 0; i < maxSpawnAttempts; i++)
         {
+            // Generate random position within spawn radius
             Vector2 randomOffset = Random.insideUnitCircle * spawnRadius;
 
             Vector3 candidatePosition = transform.position +
                 new Vector3(randomOffset.x, 0f, randomOffset.y);
 
+            // Check that there is a reachable NavMesh surface nearby
             if (!NavMesh.SamplePosition(
                 candidatePosition,
                 out NavMeshHit hit,
                 10f,
                 NavMesh.AllAreas))
             {
-                Debug.Log("Spawn failed: No NavMesh found.");
                 continue;
             }
 
+            // Keep the original spawn height
+            Vector3 spawnPosition = new Vector3(
+                hit.position.x,
+                candidatePosition.y,
+                hit.position.z
+            );
+
+            // Check collisions at the actual spawn position
             if (Physics.CheckSphere(
-                hit.position,
+                spawnPosition,
                 collisionRadius,
                 collisionLayers,
                 QueryTriggerInteraction.Ignore))
             {
-                Debug.Log("Spawn failed: Collision detected.");
                 continue;
             }
 
             MosquitoAgent newAgent = mosquitoManager.SpawnMosquito(
-                hit.position,
+                spawnPosition,
                 transform.rotation
             );
 
