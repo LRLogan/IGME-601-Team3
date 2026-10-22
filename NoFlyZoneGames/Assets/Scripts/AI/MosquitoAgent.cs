@@ -186,7 +186,7 @@ public class MosquitoAgent : MonoBehaviour
         // Keep the NavMeshAgent synchronized with our manually
         // controlled position so it can continue calculating paths.
         mAgent.nextPosition = transform.position;
-            Mathf.Clamp(transform.position.y, minHeight, maxHeight);
+        //Mathf.Clamp(transform.position.y, minHeight, maxHeight);
 
         if (mVelocity.sqrMagnitude > 0.001f)
         {
