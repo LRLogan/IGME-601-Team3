@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class MosquitoManager : MonoBehaviour
 {
-    [SerializeField] private Transform pointB;
+    public Transform pointB;
     [SerializeField] private GameObject mosquitoPrefab;
     [SerializeField] private int initialPoolSize = 10;
 
@@ -17,13 +17,19 @@ public class MosquitoManager : MonoBehaviour
 
     private void Start()
     {
+        /*
         activeMosquitoes.AddRange(
             FindObjectsByType<MosquitoAgent>(
                 FindObjectsSortMode.None));
 
         MoveAllTo(pointB.position);
+        */
+        InstantiateMosquitos();
     }
 
+    /// <summary>
+    /// Called once at start to populate the agent object pool
+    /// </summary>
     private void InstantiateMosquitos()
     {
         activeMosquitoes.Clear();
@@ -141,6 +147,14 @@ public class MosquitoManager : MonoBehaviour
     public void MoveOneTo(MosquitoAgent mosquito, Vector3 target)
     {
         mosquito.MoveTo(target);
+    }
+
+    public void MoveOneTo(MosquitoAgent mosquito, Transform target)
+    {
+        mosquito.MoveTo(
+            new Vector3(target.position.x,
+            target.position.y,
+            target.position.z));
     }
 
     public void FleeAllFrom(Vector3 target)
