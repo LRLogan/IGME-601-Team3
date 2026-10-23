@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MosquitoAgent
   moveSpeed: 3
-  arriveDistance: 2
+  arriveDistance: 0.5
   fleeDistance: 5
   mMass: 1
   mMaxSpeed: 4
