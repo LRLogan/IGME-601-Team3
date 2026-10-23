@@ -161,7 +161,7 @@ public class PickupItem : MonoBehaviour
             // Prevent the held object from colliding with the player or environment.
             rb.detectCollisions = false;
         }
-        roomParent = rb.gameObject.transform.parent;
+        roomParent = transform.parent;
         // Parent the item to the player's hold point.
         transform.SetParent(holdPoint, false);
 
@@ -193,7 +193,7 @@ public class PickupItem : MonoBehaviour
         isHeld = false;
 
         // Remove the item from the player's hold point.
-        transform.SetParent(roomParent);
+        transform.SetParent(roomParent, false);
 
         // Move the item to the calculated placement position.
         transform.SetPositionAndRotation(position, rotation);
