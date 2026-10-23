@@ -22,8 +22,10 @@ public class Window : MonoBehaviour
         if(collisionObj.CompareTag("Mosquito"))
         {
             Debug.Log("Huzzah");
-            //very hard coded for now will have functionality for multiple mosquitos
+            //Deletes the mosquito on contact 
             Destroy(collisionObj);
+
+            //hard coded graybox level stuff to move to next section
             NextLvlButton.gameObject.SetActive(true);
             Cursor.lockState = CursorLockMode.None;
         }
