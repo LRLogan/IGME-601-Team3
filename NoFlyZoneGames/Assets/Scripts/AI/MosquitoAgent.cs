@@ -23,6 +23,11 @@ public class MosquitoAgent : MonoBehaviour
     [SerializeField] private float mMaxSpeed = 4f;
     [SerializeField] private float mMaxForce = 10f;
 
+    [Header("Movement Collision")]
+    [SerializeField] private LayerMask obstacleLayers;
+    [SerializeField] private float collisionRadius = 0.25f;
+    [SerializeField] private float collisionSkin = 0.02f;
+
     [Header("Vertical Flight")]
     [SerializeField] private float verticalSpeed = 3f;
     [SerializeField] private float verticalAcceleration = 10f;
@@ -207,7 +212,7 @@ public class MosquitoAgent : MonoBehaviour
             ? mJitterVelocity : Vector3.zero;
 
         Vector3 finalVelocity = navigationVelocity + jitterVelocity + mExternalVelocity;
-        transform.position += finalVelocity * Time.deltaTime;
+        MoveWithCollision(finalVelocity * Time.deltaTime);
 
         mExternalVelocity = Vector3.MoveTowards(
             mExternalVelocity, Vector3.zero, externalDrag * Time.deltaTime);
@@ -216,6 +221,80 @@ public class MosquitoAgent : MonoBehaviour
 
         if (navigationVelocity.sqrMagnitude > 0.001f)
             transform.forward = navigationVelocity.normalized;
+    }
+
+    private void MoveWithCollision(Vector3 displacement)
+    {
+        float distance = displacement.magnitude;
+
+        if (distance <= 0.0001f)
+            return;
+
+        Vector3 direction = displacement / distance;
+        Vector3 startPosition = transform.position;
+
+        // Check whether the mosquito would hit an obstacle.
+        if (Physics.SphereCast(
+            startPosition,
+            collisionRadius,
+            direction,
+            out RaycastHit hit,
+            distance + collisionSkin,
+            obstacleLayers,
+            QueryTriggerInteraction.Ignore))
+        {
+            // Move up to the obstacle without penetrating it.
+            float safeDistance = Mathf.Clamp(
+                hit.distance - collisionSkin,
+                0f,
+                distance
+            );
+
+            Vector3 safeMovement = direction * safeDistance;
+
+            // Calculate the remaining movement.
+            Vector3 remainingMovement = displacement - safeMovement;
+
+            // Project along the obstacle instead of moving into it.
+            Vector3 slideMovement = Vector3.ProjectOnPlane(
+                remainingMovement,
+                hit.normal
+            );
+
+            Vector3 slideStart = startPosition + safeMovement;
+
+            // Check the sliding direction for another obstacle.
+            float slideDistance = slideMovement.magnitude;
+
+            if (slideDistance > 0.0001f)
+            {
+                Vector3 slideDirection = slideMovement / slideDistance;
+
+                if (Physics.SphereCast(
+                    slideStart,
+                    collisionRadius,
+                    slideDirection,
+                    out RaycastHit slideHit,
+                    slideDistance + collisionSkin,
+                    obstacleLayers,
+                    QueryTriggerInteraction.Ignore))
+                {
+                    slideDistance = Mathf.Clamp(
+                        slideHit.distance - collisionSkin,
+                        0f,
+                        slideDistance
+                    );
+                }
+
+                safeMovement += slideDirection * slideDistance;
+            }
+
+            transform.position += safeMovement;
+        }
+        else
+        {
+            transform.position += displacement;
+        }
     }
 
     private void SyncNavMeshPosition()
