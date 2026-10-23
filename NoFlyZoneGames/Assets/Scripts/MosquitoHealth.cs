@@ -5,6 +5,12 @@ public class MosquitoHealth : MonoBehaviour
 {
     [SerializeField]
     private float health = 100f;
+    private MosquitoManager mosquitoManager;
+
+    void Start()
+    {
+        mosquitoManager = FindFirstObjectByType<MosquitoManager>();
+    }
 
     public void TakeDamage(float damage)
     {
@@ -14,7 +20,8 @@ public class MosquitoHealth : MonoBehaviour
 
         if (health <= 0)
         {
-            Destroy(gameObject);
+            mosquitoManager.DespawnMosquito
+                (this.gameObject.GetComponent<MosquitoAgent>());
         }
     }
 }
