@@ -386,8 +386,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 67798807}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 57.56087, y: 0, z: -4.65509}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -87.83913, y: -4.01, z: 9.05591}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -403,7 +403,7 @@ Transform:
   - {fileID: 331989650}
   - {fileID: 1006856152}
   - {fileID: 173454956}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1835093143}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &173454956 stripped
 Transform:
@@ -490,10 +490,6 @@ GameObject:
   - component: {fileID: 215032825}
   m_Layer: 5
   m_Name: Restart
-  - component: {fileID: 243284106}
-  - component: {fileID: 243284105}
-  m_Layer: 0
-  m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -557,15 +553,6 @@ MonoBehaviour:
         m_CallState: 2
 --- !u!114 &215032825
 MonoBehaviour:
-  m_GameObject: {fileID: 243284104}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6730e1ca1c8d0149b841565231a8235, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  startingSceneName: 
---- !u!4 &243284106
-Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -573,11 +560,10 @@ Transform:
   m_GameObject: {fileID: 215032823}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b8bbaa36af664b42a14559cf290d507, type: 3}
+  m_Script: {fileID: 11500000, guid: f6730e1ca1c8d0149b841565231a8235, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: '::'
-  player: {fileID: 624823571}
-  spawn: {fileID: 43805614}
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  startingSceneName: 
 --- !u!114 &215032826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -625,7 +611,7 @@ RectTransform:
   m_GameObject: {fileID: 215032823}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 466463617}
@@ -633,7 +619,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 465, y: -302}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!4 &249727910 stripped
@@ -646,15 +632,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3436383908099102148, guid: 6eeae75a3b1ffe74f8cb659fe108ebb7, type: 3}
   m_PrefabInstance: {fileID: 1157427292}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 243284104}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.55683, y: -8.71956, z: -6.76484}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &296204914
 GameObject:
   m_ObjectHideFlags: 0
@@ -1273,8 +1250,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 567411259}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 145.4, y: 4.01, z: -13.711}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1292,7 +1269,7 @@ Transform:
   - {fileID: 584466905}
   - {fileID: 776869593}
   - {fileID: 1615908051}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1835093143}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &574617968
 PrefabInstance:
@@ -3197,6 +3174,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MosquitoManager
   pointB: {fileID: 0}
+  mosquitoPrefab: {fileID: 0}
+  initialPoolSize: 10
 --- !u!4 &1442671525
 Transform:
   m_ObjectHideFlags: 0
@@ -3375,8 +3354,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1555405359}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.69, y: 3.15575, z: -15.24049}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -143.70999, y: -0.8542502, z: -1.5294895}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3390,7 +3369,7 @@ Transform:
   - {fileID: 660177908}
   - {fileID: 30328214}
   - {fileID: 43805615}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1835093143}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1564120593
 GameObject:
@@ -4091,6 +4070,40 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 67798808}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1835093142
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1835093143}
+  m_Layer: 0
+  m_Name: Rooms
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1835093143
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1835093142}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 145.4, y: 4.01, z: -13.711}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1555405360}
+  - {fileID: 67798808}
+  - {fileID: 567411260}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1852401062
 PrefabInstance:
@@ -4829,10 +4842,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 1962965436}
   - {fileID: 1964206554}
-  - {fileID: 1555405360}
-  - {fileID: 67798808}
-  - {fileID: 567411260}
+  - {fileID: 1835093143}
   - {fileID: 1124114954}
   - {fileID: 772917117}
   - {fileID: 1442671525}
-  - {fileID: 243284106}
