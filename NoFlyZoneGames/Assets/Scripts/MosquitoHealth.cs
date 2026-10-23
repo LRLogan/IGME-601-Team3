@@ -22,6 +22,7 @@ public class MosquitoHealth : MonoBehaviour
         {
             mosquitoManager.DespawnMosquito
                 (this.gameObject.GetComponent<MosquitoAgent>());
+
         }
     }
 }
