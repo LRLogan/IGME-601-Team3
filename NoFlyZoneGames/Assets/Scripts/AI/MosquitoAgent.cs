@@ -20,15 +20,27 @@ public class MosquitoAgent : MonoBehaviour
     [SerializeField] private float arriveDistance = 2f;
     [SerializeField] private float fleeDistance = 5f;
     [SerializeField] private float mMass = 1f;
-    [SerializeField] private float mMaxSpeed = 3f;
+    [SerializeField] private float mMaxSpeed = 4f;
     [SerializeField] private float mMaxForce = 10f;
-    [SerializeField] private float maxHeight = 1f;
-    [SerializeField] private float minHeight = 10f;
-    [SerializeField] private float jitterRadius = 0.5f;
-    [SerializeField] private float jitterForce = 0.5f;
+
+    [Header("Movement Collision")]
+    [SerializeField] private LayerMask obstacleLayers;
+    [SerializeField] private float collisionRadius = 0.25f;
+    [SerializeField] private float collisionSkin = 0.02f;
+
+    [Header("Vertical Flight")]
+    [SerializeField] private float verticalSpeed = 3f;
+    [SerializeField] private float verticalAcceleration = 10f;
+    [SerializeField] private float flightVariation = 0.4f;
+    [SerializeField] private float variationFrequency = 1.5f;
+
+    [Header("Jitter")]
+    [SerializeField] private float jitterRadius = 0.75f;
+    [SerializeField] private float jitterForce = 50f;
+    [SerializeField] private float maxJitterSpeed = 5f;
 
     [Tooltip("Time in seconds")]
-    [SerializeField] private float jitterChangeInterval = 2f;
+    [SerializeField] private float jitterChangeInterval = 0.75f;
 
     [Header("External Forces")]
     [SerializeField] private float externalDrag = 2f;
@@ -43,6 +55,8 @@ public class MosquitoAgent : MonoBehaviour
     private bool mFleeing;
     private float timeSinceLastJitter = 0f;
     private Vector3 jitterTarget;
+    private Vector3 mJitterVelocity;
+    private float mFlightSeed;
     private readonly Stack<Vector3> mTargetStack = new Stack<Vector3>();
 
     // External control vars
@@ -67,35 +81,31 @@ public class MosquitoAgent : MonoBehaviour
 
         mAgent.speed = moveSpeed;
 
+        mFlightSeed = Random.Range(0f, 1000f);
+        jitterTarget = Random.insideUnitSphere * jitterRadius;
         CurrentTask = Task.Idle;
     }
 
     private void Update()
     {
-        // Checks for external control
         if (mExternallyControlled) return;
 
-        // Delegates a task to its respective behavior 
         switch (CurrentTask)
         {
             case Task.Idle:
                 Idle();
                 break;
-
             case Task.Pathfinding:
                 Pathfinding();
                 break;
-
             case Task.Move:
                 Move();
                 break;
         }
 
-        // Apply external movement even when the AI is idle.
-        if (CurrentTask == Task.Idle && mExternalVelocity.sqrMagnitude > 0.001f)
-        {
-            ApplyExternalVelocity();
-        }
+        // Movement and external forces are processed in one place,
+        // even if the agent has no active navigation task.
+        ApplyVelocity();
     }
 
     #region TASK SYSTEM
@@ -113,26 +123,19 @@ public class MosquitoAgent : MonoBehaviour
     /// </summary>
     private void Pathfinding()
     {
-        if (!mAgent.isOnNavMesh || mTargetStack.Count == 0)
+        if (!mAgent.isOnNavMesh)
         {
             CurrentTask = Task.Idle;
             return;
         }
 
-        // Ask the NavMeshAgent to calculate a path
-        // It will not move the mosquito because updatePosition is false
-        mTarget = CurrentTarget;
-        mAgent.SetDestination(mTarget);
+        // FleeFrom uses its own target, rather than the target stack.
+        if (mFleeing)
+        {
+            CurrentTask = Task.Move;
+            return;
+        }
 
-        CurrentTask = Task.Move;
-    }
-
-    /// <summary>
-    /// Move task
-    /// </summary>
-    private void Move()
-    {
-        // No task in stack
         if (mTargetStack.Count == 0)
         {
             CurrentTask = Task.Idle;
@@ -141,89 +144,246 @@ public class MosquitoAgent : MonoBehaviour
 
         mTarget = CurrentTarget;
 
-        if (!mFleeing &&
-        Vector3.Distance(transform.position, mTarget) <= arriveDistance)
+        // Map the 3D destination onto the surface used for XZ routing.
+        // This DOES NOT replace mTarget.y, which is used for flight.
+        if (!NavMesh.SamplePosition(mTarget, out NavMeshHit hit,
+                20f, mAgent.areaMask) ||
+            !mAgent.SetDestination(hit.position))
         {
-            CompleteCurrentTarget();
+            Debug.LogWarning("Could not find a NavMesh destination.", this);
+            CurrentTask = Task.Idle;
             return;
         }
 
-        // Has a task -> delegate 
-        if (mFleeing)
+        CurrentTask = Task.Move;
+    }
+
+    private void Move()
+    {
+        if (!mFleeing)
         {
-            Flee();
-        }
-        else if (mAgent.remainingDistance <= arriveDistance)
-        {
-            Arrive();
+            if (mTargetStack.Count == 0)
+            {
+                CurrentTask = Task.Idle;
+                return;
+            }
+
+            mTarget = CurrentTarget;
+
+            if (Vector3.Distance(transform.position, mTarget) <= arriveDistance)
+            {
+                CompleteCurrentTarget();
+                return;
+            }
+
+            // When the path reaches the goal's XZ, vertical flight
+            // continues until the mosquito reaches the true 3D target.
+            if (!mAgent.pathPending)
+            {
+                if (mAgent.remainingDistance <= arriveDistance)
+                    Arrive();
+                else
+                    Seek();
+            }
         }
         else
         {
-            Seek();
+            Flee();
         }
 
-        ApplyVelocity();
+        if (CurrentTask == Task.Move)
+        {
+            ApplyVerticalSteering();
+            UpdateJitter();
+        }
     }
 
-    /// <summary>
-    /// Applies the calculated velocity to the mosquito's position.
-    /// The NavMeshAgent does not directly move the mosquito.
-    /// </summary>
     private void ApplyVelocity()
     {
-        mVelocity = Vector3.ClampMagnitude(
-            mVelocity,
-            mMaxSpeed);
+        // No residual navigation/jitter drifting after a task ends.
+        if (CurrentTask != Task.Move)
+        {
+            mVelocity = Vector3.zero;
+            mJitterVelocity = Vector3.zero;
+        }
 
-        Vector3 finalVelocity = mVelocity + mExternalVelocity;
-        transform.position += finalVelocity * Time.deltaTime;
+        Vector3 navigationVelocity = Vector3.ClampMagnitude(mVelocity, mMaxSpeed);
+        Vector3 jitterVelocity = CurrentTask == Task.Move
+            ? mJitterVelocity : Vector3.zero;
+
+        Vector3 finalVelocity = navigationVelocity + jitterVelocity + mExternalVelocity;
+        MoveWithCollision(finalVelocity * Time.deltaTime);
 
         mExternalVelocity = Vector3.Lerp(
-            mExternalVelocity,
-            Vector3.zero,
-            externalDrag * Time.deltaTime);
+            mExternalVelocity, Vector3.zero, externalDrag * Time.deltaTime);
 
-        // Keep the NavMeshAgent synchronized with our manually
-        // controlled position so it can continue calculating paths.
-        mAgent.nextPosition = transform.position;
-            Mathf.Clamp(transform.position.y, minHeight, maxHeight);
+        SyncNavMeshPosition();
 
-        if (mVelocity.sqrMagnitude > 0.001f)
+        if (navigationVelocity.sqrMagnitude > 0.001f)
+            transform.forward = navigationVelocity.normalized;
+    }
+
+    private void MoveWithCollision(Vector3 displacement)
+    {
+        float distance = displacement.magnitude;
+
+        if (distance <= 0.0001f)
+            return;
+
+        Vector3 direction = displacement / distance;
+        Vector3 startPosition = transform.position;
+
+        // Check whether the mosquito would hit an obstacle.
+        if (Physics.SphereCast(
+            startPosition,
+            collisionRadius,
+            direction,
+            out RaycastHit hit,
+            distance + collisionSkin,
+            obstacleLayers,
+            QueryTriggerInteraction.Ignore))
         {
-            transform.forward = mVelocity.normalized;
+            // Move up to the obstacle without penetrating it.
+            float safeDistance = Mathf.Clamp(
+                hit.distance - collisionSkin,
+                0f,
+                distance
+            );
+
+            Vector3 safeMovement = direction * safeDistance;
+
+            // Calculate the remaining movement.
+            Vector3 remainingMovement = displacement - safeMovement;
+
+            // Project along the obstacle instead of moving into it.
+            Vector3 slideMovement = Vector3.ProjectOnPlane(
+                remainingMovement,
+                hit.normal
+            );
+
+            Vector3 slideStart = startPosition + safeMovement;
+
+            // Check the sliding direction for another obstacle.
+            float slideDistance = slideMovement.magnitude;
+
+            if (slideDistance > 0.0001f)
+            {
+                Vector3 slideDirection = slideMovement / slideDistance;
+
+                if (Physics.SphereCast(
+                    slideStart,
+                    collisionRadius,
+                    slideDirection,
+                    out RaycastHit slideHit,
+                    slideDistance + collisionSkin,
+                    obstacleLayers,
+                    QueryTriggerInteraction.Ignore))
+                {
+                    slideDistance = Mathf.Clamp(
+                        slideHit.distance - collisionSkin,
+                        0f,
+                        slideDistance
+                    );
+                }
+
+                safeMovement += slideDirection * slideDistance;
+            }
+
+            transform.position += safeMovement;
+        }
+        else
+        {
+            transform.position += displacement;
         }
     }
 
-    private void ApplyExternalVelocity()
+    private void SyncNavMeshPosition()
     {
-        mExternalVelocity.y = 0; // -- TEMPORARY - lock y-axis --
-        transform.position += mExternalVelocity * Time.deltaTime;
+        if (!mAgent.isOnNavMesh) return;
 
-        mExternalVelocity = Vector3.Lerp(
-            mExternalVelocity,
-            Vector3.zero,
-            externalDrag * Time.deltaTime
-        );
+        // Keep the navigation simulation on its surface while
+        // allowing the mosquito transform to fly freely in Y.
+        Vector3 navPosition = mAgent.nextPosition;
+        navPosition.x = transform.position.x;
+        navPosition.z = transform.position.z;
+        mAgent.nextPosition = navPosition;
+    }
 
-        if (mAgent.isOnNavMesh)
+    private void ApplyVerticalSteering()
+    {
+        // Flee uses the opposite altitude direction from the threat.
+        float targetY = mTarget.y;
+        if (mFleeing)
         {
-            mAgent.nextPosition = transform.position;
+            float sign = Mathf.Sign(transform.position.y - mTarget.y);
+            if (Mathf.Approximately(sign, 0f)) sign = 1f;
+            targetY = transform.position.y + sign * fleeDistance;
         }
+
+        float distance = Vector3.Distance(transform.position, mTarget);
+        float variationWeight = mFleeing ? 1f :
+            Mathf.Clamp01(distance / Mathf.Max(0.01f, arriveDistance * 3f));
+
+        float noise = Mathf.PerlinNoise(
+            mFlightSeed, Time.time * variationFrequency) * 2f - 1f;
+
+        float desiredHeight = targetY +
+            noise * flightVariation * variationWeight;
+
+        float desiredYSpeed = Mathf.Clamp(
+            (desiredHeight - transform.position.y) * 2f,
+            -verticalSpeed, verticalSpeed);
+
+        mVelocity.y = Mathf.MoveTowards(
+            mVelocity.y, desiredYSpeed,
+            verticalAcceleration * Time.deltaTime);
+    }
+
+    private void UpdateJitter()
+    {
+        timeSinceLastJitter += Time.deltaTime;
+        if (timeSinceLastJitter >= Mathf.Max(0.01f, jitterChangeInterval))
+        {
+            timeSinceLastJitter = 0f;
+            jitterTarget = Random.insideUnitSphere * jitterRadius;
+        }
+
+        // Jitter is its own small, capped velocity; it no longer
+        // accumulates indefinitely inside Seek() or Arrive().
+        Vector3 desired = jitterTarget.sqrMagnitude > 0.0001f
+            ? jitterTarget.normalized * maxJitterSpeed
+            : Vector3.zero;
+
+        mJitterVelocity = Vector3.MoveTowards(
+            mJitterVelocity, desired,
+            jitterForce * Time.deltaTime);
+
+        // Fade jitter out near a 3D target so arrival is achievable.
+        if (!mFleeing)
+        {
+            float distance = Vector3.Distance(transform.position, mTarget);
+            mJitterVelocity *= Mathf.Clamp01(
+                distance / Mathf.Max(0.01f, arriveDistance * 2f));
+        }
+
+        Debug.DrawRay(transform.position, mJitterVelocity, Color.red);
     }
 
     private void CompleteCurrentTarget()
     {
         mTargetStack.Pop();
+        mVelocity = Vector3.zero;
+        mJitterVelocity = Vector3.zero;
 
         if (mTargetStack.Count == 0)
         {
+            Stop();
             CurrentTask = Task.Idle;
-            return;
         }
-
-        // A previous target still exists.
-        // Recalculate the path from the mosquito's new position.
-        CurrentTask = Task.Pathfinding;
+        else
+        {
+            CurrentTask = Task.Pathfinding;
+        }
     }
 
     #endregion
@@ -237,50 +397,25 @@ public class MosquitoAgent : MonoBehaviour
     /// </summary>
     private void Seek()
     {
-        Vector3 desiredVelocity = mAgent.desiredVelocity;
+        Vector3 desired = mAgent.desiredVelocity;
+        desired.y = 0f;
+        if (desired.sqrMagnitude < 0.0001f) return;
 
-        if (desiredVelocity.sqrMagnitude <= 0.001f) return;
-
-        desiredVelocity = desiredVelocity.normalized * moveSpeed;
-
-        Vector3 steering = desiredVelocity - mVelocity;
-
-        steering = Vector3.ClampMagnitude(
-            steering,
-            mMaxForce);
-
-        Vector3 acceleration = steering / mMass;
-
-        mVelocity += (acceleration + Jitter()) * Time.deltaTime;
+        SteerHorizontal(desired.normalized * moveSpeed);
     }
 
-    /// <summary>
-    /// Adds a jitter behavior to the mosquitos movement
-    /// </summary>
-    /// <returns>jitter force</returns>
-    private Vector3 Jitter()
+    private void SteerHorizontal(Vector3 desiredXZ)
     {
-        if (mAgent == null) return Vector3.zero;
+        Vector3 currentXZ = new Vector3(mVelocity.x, 0f, mVelocity.z);
+        Vector3 steering = Vector3.ClampMagnitude(
+            desiredXZ - currentXZ, mMaxForce);
 
-        // Update the time and target
-        timeSinceLastJitter += Time.deltaTime;
-        if(timeSinceLastJitter >= jitterChangeInterval)
-        {
-            timeSinceLastJitter = 0;
-            jitterTarget = Random.insideUnitSphere * jitterRadius;
-        }
-        jitterTarget = jitterTarget.normalized * jitterRadius;
+        Vector3 nextXZ = currentXZ +
+            steering / Mathf.Max(0.01f, mMass) * Time.deltaTime;
 
-        // Find the world position
-        Vector3 targetWorld =
-            mAgent.gameObject.transform.position + jitterTarget;
-
-        // returns the calculated steering force
-        Vector3 steeringForce = 
-            (targetWorld - mAgent.gameObject.transform.position).normalized * jitterForce;
-        steeringForce.y = 0;
-        Debug.DrawRay(mAgent.gameObject.transform.position, steeringForce, Color.red);
-        return steeringForce;
+        mVelocity.x = nextXZ.x;
+        mVelocity.z = nextXZ.z;
+        // Preserve mVelocity.y for vertical steering.
     }
 
     /// <summary>
@@ -289,45 +424,25 @@ public class MosquitoAgent : MonoBehaviour
     /// </summary>
     private void Arrive()
     {
-        float distance = Vector3.Distance(
-            transform.position,
-            mTarget);
+        Vector3 desired = mAgent.desiredVelocity;
+        desired.y = 0f;
 
-        if (distance <= mAgent.stoppingDistance + 0.1f)
-        {
-            mVelocity = Vector3.zero;
+        // Use horizontal distance for horizontal slowing.
+        Vector3 delta = mTarget - transform.position;
+        delta.y = 0f;
+        float horizontalDistance = delta.magnitude;
 
-            Stop();
-
-            CurrentTask = Task.Idle;
-            return;
-        }
-
-        Vector3 desiredVelocity = mAgent.desiredVelocity;
-
-        if (desiredVelocity.sqrMagnitude <= 0.001f)
-            return;
-
-        // Reduce the desired speed as we approach the target.
         float speedPercent = Mathf.Clamp01(
-            distance / arriveDistance);
+            horizontalDistance / Mathf.Max(0.01f, arriveDistance));
 
-        desiredVelocity =
-            desiredVelocity.normalized *
-            moveSpeed *
-            speedPercent;
+        if (desired.sqrMagnitude > 0.0001f)
+            desired = desired.normalized * moveSpeed * speedPercent;
+        else
+            desired = Vector3.zero;
 
-        Vector3 steering =
-            desiredVelocity - mVelocity;
-
-        steering = Vector3.ClampMagnitude(
-            steering,
-            mMaxForce);
-
-        Vector3 acceleration =
-            steering / mMass;
-
-        mVelocity += acceleration * Time.deltaTime;
+        SteerHorizontal(desired);
+        // Do NOT stop the agent here: Move() handles 3D arrival
+        // and popping the target stack.
     }
 
     /// <summary>
@@ -350,16 +465,18 @@ public class MosquitoAgent : MonoBehaviour
 
             Stop();
 
-            CurrentTask = Task.Idle;
+            CurrentTask = mTargetStack.Count > 0
+                ? Task.Pathfinding : Task.Idle;
             return;
         }
 
-        Vector3 fleeDirection =
-            transform.position - mTarget;
+        Vector3 fleeDirection = transform.position - mTarget;
+        fleeDirection.y = 0f;
 
         if (fleeDirection.sqrMagnitude < 0.001f)
-            return;
+            fleeDirection = transform.forward;
 
+        fleeDirection.y = 0f;
         fleeDirection.Normalize();
 
         Vector3 fleePosition =
@@ -419,7 +536,7 @@ public class MosquitoAgent : MonoBehaviour
 
         // The external controller may have moved the mosquito,
         // so synchronize the NavMeshAgent with its new position.
-        mAgent.nextPosition = transform.position;
+        SyncNavMeshPosition();
 
         // A new path is required because our position may have changed.
         if (CurrentTask == Task.Move ||
@@ -465,7 +582,8 @@ public class MosquitoAgent : MonoBehaviour
     /// </summary>
     public void Stop()
     {
-        mAgent.ResetPath();
+        if (mAgent.isOnNavMesh)
+            mAgent.ResetPath();
         mAgent.speed = moveSpeed;
     }
 
@@ -504,6 +622,30 @@ public class MosquitoAgent : MonoBehaviour
         mExternalVelocity = Vector3.ClampMagnitude(
             mExternalVelocity,
             mMaxSpeed);
+    }
+
+    /// <summary>
+    /// Compleatly reset the agent used when despawning / sending to object pool
+    /// </summary>
+    public void ResetAgent()
+    {
+        mTargetStack.Clear();
+
+        mVelocity = Vector3.zero;
+        mExternalVelocity = Vector3.zero;
+
+        mFleeing = false;
+        mExternallyControlled = false;
+        mJitterVelocity = Vector3.zero;
+        timeSinceLastJitter = 0f;
+        jitterTarget = Random.insideUnitSphere * jitterRadius;
+        CurrentTask = Task.Idle;
+
+        if (mAgent.isOnNavMesh)
+        {
+            mAgent.ResetPath();
+            SyncNavMeshPosition();
+        }
     }
 
     #endregion
