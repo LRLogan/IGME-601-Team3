@@ -344,8 +344,13 @@ MonoBehaviour:
     m_Bits: 512
   placementRange: 4
   placementPadding: 0
+  playerClearance: 0.05
   validPreviewMaterial: {fileID: 2100000, guid: bac4b59d8dfe5d64d84ff5e25cecd9bd, type: 2}
   invalidPreviewMaterial: {fileID: 2100000, guid: 6436a609801ede94abc90fb263b21a7b, type: 2}
+  aoeValidMaterial: {fileID: 2100000, guid: c7778662220e41948ba4797d368ae69e, type: 2}
+  aoeInvalidMaterial: {fileID: 2100000, guid: 471209cb3b6844c4f8b6d5eeddee4eea, type: 2}
+  rotateAction: {fileID: -6949424449248316782, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  rotationStep: 15
 --- !u!4 &5884256519999219076 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4135013735270702856, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}

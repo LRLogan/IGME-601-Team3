@@ -194,3 +194,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PickupItem
   rb: {fileID: 2477640757587414123}
   placementRadius: 0.25
+  aoeCollider: {fileID: 2084938462336818666}

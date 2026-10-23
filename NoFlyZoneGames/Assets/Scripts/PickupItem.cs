@@ -12,6 +12,13 @@ public class PickupItem : MonoBehaviour
     // Defines how much space around the item's center must fit on the surface.
     [SerializeField] private float placementRadius = 0.25f;
 
+    [Header("Area Of Effect")]
+    // Optional. The trigger SphereCollider or BoxCollider that defines this
+    // item's AOE. If left empty, the first trigger sphere or box collider found
+    // on this object or its children is used. Items without one simply show no
+    // AOE preview.
+    [SerializeField] private Collider aoeCollider;
+
     // Tracks whether the item is currently being held by the player.
     private bool isHeld;
 
@@ -25,6 +32,11 @@ public class PickupItem : MonoBehaviour
     /// </summary>
     public float PlacementRadius => placementRadius;
 
+    /// <summary>
+    /// Gets whether this item has an area of effect.
+    /// </summary>
+    public bool HasAoe => aoeCollider != null;
+
     private void Awake()
     {
         // Automatically find the Rigidbody if one was not assigned.
@@ -32,6 +44,100 @@ public class PickupItem : MonoBehaviour
         {
             rb = GetComponent<Rigidbody>();
         }
+
+        // Automatically find the AOE trigger if one was not assigned.
+        if (aoeCollider == null)
+        {
+            foreach (Collider col in GetComponentsInChildren<Collider>(true))
+            {
+                if (col.isTrigger && (col is SphereCollider || col is BoxCollider))
+                {
+                    aoeCollider = col;
+                    break;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Describes the shape of an item's area of effect in world units.
+    /// </summary>
+    public struct AoeShape
+    {
+        /// <summary>
+        /// The primitive that matches the AOE: Sphere or Cube.
+        /// </summary>
+        public PrimitiveType type;
+
+        /// <summary>
+        /// The full size of the AOE. A sphere uses its diameter on every axis.
+        /// </summary>
+        public Vector3 size;
+
+        /// <summary>
+        /// The AOE center relative to the item's pivot, with the item's current rotation removed.
+        /// </summary>
+        public Vector3 centerOffset;
+
+        /// <summary>
+        /// The AOE collider's rotation relative to the item.
+        /// </summary>
+        public Quaternion rotationOffset;
+    }
+
+    /// <summary>
+    /// Gets the item's area of effect as a world-space shape.
+    /// </summary>
+    /// <param name="shape">The shape, size and placement of the AOE relative to the item.</param>
+    /// <returns>True if the item has an AOE.</returns>
+    public bool TryGetAoe(out AoeShape shape)
+    {
+        shape = default;
+
+        if (aoeCollider == null)
+        {
+            return false;
+        }
+
+        // Only collider settings and transforms are read (not Collider.bounds),
+        // so this still works if an item effect disables the collider while held.
+        Transform colliderTransform = aoeCollider.transform;
+        Vector3 scale = colliderTransform.lossyScale;
+        Vector3 localCenter;
+
+        if (aoeCollider is BoxCollider box)
+        {
+            shape.type = PrimitiveType.Cube;
+            shape.size = Vector3.Scale(box.size, new Vector3(
+                Mathf.Abs(scale.x),
+                Mathf.Abs(scale.y),
+                Mathf.Abs(scale.z)));
+            localCenter = box.center;
+        }
+        else if (aoeCollider is SphereCollider sphere)
+        {
+            // Unity scales a SphereCollider by the largest axis of its lossy scale.
+            float maxScale = Mathf.Max(
+                Mathf.Abs(scale.x),
+                Mathf.Abs(scale.y),
+                Mathf.Abs(scale.z));
+
+            shape.type = PrimitiveType.Sphere;
+            shape.size = Vector3.one * (sphere.radius * maxScale * 2f);
+            localCenter = sphere.center;
+        }
+        else
+        {
+            return false;
+        }
+
+        Quaternion inverseItemRotation = Quaternion.Inverse(transform.rotation);
+
+        shape.centerOffset = inverseItemRotation *
+            (colliderTransform.TransformPoint(localCenter) - transform.position);
+        shape.rotationOffset = inverseItemRotation * colliderTransform.rotation;
+
+        return true;
     }
 
     /// <summary>
