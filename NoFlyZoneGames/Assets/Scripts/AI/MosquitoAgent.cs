@@ -57,7 +57,8 @@ public class MosquitoAgent : MonoBehaviour
     private Vector3 jitterTarget;
     private Vector3 mJitterVelocity;
     private float mFlightSeed;
-    private readonly Stack<Vector3> mTargetStack = new Stack<Vector3>();
+    private readonly Stack<MovementTarget> mTargetStack = new Stack<MovementTarget>();
+    private float defaultNavStoppingDistance;
 
     // External control vars
     // External control is for COMPLETE control over the agent
@@ -68,11 +69,14 @@ public class MosquitoAgent : MonoBehaviour
     private bool mPreviousFleeing;
 
     // Inline way to get the current target
-    private Vector3 CurrentTarget => mTargetStack.Peek();
+    private Vector3 CurrentTarget => mTargetStack.Peek().Position;
+    private float CurrentStopDistance => mTargetStack.Peek().StopDistance;
 
     private void Awake()
     {
         mAgent = GetComponent<NavMeshAgent>();
+
+        defaultNavStoppingDistance = mAgent.stoppingDistance;
 
         // NavMeshAgent is responsible for calculating the path,
         // but NOT for moving or rotating the mosquito.
@@ -132,6 +136,8 @@ public class MosquitoAgent : MonoBehaviour
         // FleeFrom uses its own target, rather than the target stack.
         if (mFleeing)
         {
+            // Restore normal navigation setting
+            mAgent.stoppingDistance = defaultNavStoppingDistance;
             CurrentTask = Task.Move;
             return;
         }
@@ -143,6 +149,8 @@ public class MosquitoAgent : MonoBehaviour
         }
 
         mTarget = CurrentTarget;
+
+        mAgent.stoppingDistance = Mathf.Min(defaultNavStoppingDistance, CurrentStopDistance * 0.5f);
 
         // Map the 3D destination onto the surface used for XZ routing.
         // This DOES NOT replace mTarget.y, which is used for flight.
@@ -170,7 +178,7 @@ public class MosquitoAgent : MonoBehaviour
 
             mTarget = CurrentTarget;
 
-            if (Vector3.Distance(transform.position, mTarget) <= arriveDistance)
+            if (Vector3.Distance(transform.position, mTarget) <= CurrentStopDistance)
             {
                 CompleteCurrentTarget();
                 return;
@@ -546,13 +554,22 @@ public class MosquitoAgent : MonoBehaviour
         }
     }
 
+    public void MoveTo(Vector3 target)
+    {
+        // Default MoveTo arrival distance
+        MoveTo(target, arriveDistance);
+    }
+
     /// <summary>
     /// Simple move to behavior 
     /// </summary>
     /// <param name="target"></param>
-    public void MoveTo(Vector3 target)
+    public void MoveTo(Vector3 target, float stopDistance)
     {
-        mTargetStack.Push(target);
+        // Add a destination with its own arrival distance
+        mTargetStack.Push(
+            new MovementTarget(target, Mathf.Max(0.05f, stopDistance))
+        );
         mFleeing = false;
         CurrentTask = Task.Pathfinding;
     }
@@ -641,6 +658,8 @@ public class MosquitoAgent : MonoBehaviour
         jitterTarget = Random.insideUnitSphere * jitterRadius;
         CurrentTask = Task.Idle;
 
+        mAgent.stoppingDistance = defaultNavStoppingDistance;
+
         if (mAgent.isOnNavMesh)
         {
             mAgent.ResetPath();
@@ -649,4 +668,18 @@ public class MosquitoAgent : MonoBehaviour
     }
 
     #endregion
+
+    private class MovementTarget
+    {
+        // Store the destination and arrival tolerance
+        // Preserve each destination's stop distance in the stack when an interrupted destination resumes
+        public Vector3 Position { get; }
+        public float StopDistance { get; }
+
+        public MovementTarget(Vector3 position, float stopDistance)
+        {
+            Position = position;
+            StopDistance = stopDistance;
+        }
+    }
 }

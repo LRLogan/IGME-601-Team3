@@ -1,12 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class TargetHealth : MonoBehaviour
 {
     [SerializeField] private int maxHealth = 100;
     [SerializeField] private int damagePerHit = 10;
     [SerializeField] private MosquitoManager mManager;
+    [SerializeField] private Slider healthSlider;
     private HashSet<MosquitoAgent> arrivedMosquito = new HashSet<MosquitoAgent>();
 
     private int currentHealth;
@@ -15,6 +16,13 @@ public class TargetHealth : MonoBehaviour
     {
         // Set the target to full health at the beginning of the game
         currentHealth = maxHealth;
+        if (healthSlider != null)
+        {
+            healthSlider.minValue = 0;
+            healthSlider.maxValue = maxHealth;
+            healthSlider.wholeNumbers = true;
+        }
+        UpdateHealthBar();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -23,19 +31,36 @@ public class TargetHealth : MonoBehaviour
         {
             return;
         }
+
         MosquitoAgent mosquito = other.GetComponent<MosquitoAgent>();
-        if (mosquito == null || arrivedMosquito.Contains(mosquito))
+        if (mosquito == null)
         {
-            // If no mosquito or mosquito already registered, ignore
             return;
         }
-        // Register the mosquito
-        arrivedMosquito.Add(mosquito);
-        // Reduce target health, no lower than 0
+
+        if (mManager == null)
+        {
+            return;
+        }
+
+        // Count the hit only if manager accepts the active mosquito
+        // Further callbacks for the despawned mosquito cannot cause more damage
+        if (!mManager.TryDespawnMosquito(mosquito))
+        {
+            return;
+        }
+
         currentHealth = Mathf.Clamp(currentHealth - damagePerHit, 0, maxHealth);
-        Debug.Log($"Mosquito has hit the target, current health is {currentHealth}");
-        // Unregister and de-spawn the mosquito from map
-        mManager.UnregisterMosquito(mosquito);
-        Destroy(mosquito.gameObject);
+        UpdateHealthBar();
+        Debug.Log($"Mosquito hit the target. Health: {currentHealth}", this);
+    }
+
+    private void UpdateHealthBar()
+    {
+        if (healthSlider != null)
+        {
+            healthSlider.value = currentHealth;
+        }
+
     }
 }

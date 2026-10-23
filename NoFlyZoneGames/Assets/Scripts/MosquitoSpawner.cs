@@ -12,6 +12,7 @@ public class MosquitoSpawner : MonoBehaviour
     [SerializeField] private float collisionRadius = 0.5f;
     [SerializeField] private LayerMask collisionLayers;
     [SerializeField] private int maxSpawnAttempts = 15;
+    [SerializeField] private float targetStopDistance = 0.1f;
 
     // temporary test hook
     private void Update()
@@ -76,7 +77,7 @@ public class MosquitoSpawner : MonoBehaviour
                 return;
             }
 
-            mosquitoManager.MoveOneTo(newAgent, mosquitoManager.pointB);
+            mosquitoManager.MoveOneTo(newAgent, mosquitoManager.pointB, targetStopDistance);
 
             return;
         }

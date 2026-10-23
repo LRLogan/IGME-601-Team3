@@ -108,6 +108,7 @@ public class MosquitoManager : MonoBehaviour
         return mosquito;
     }
 
+    // Preserved for other scripts
     public void DespawnMosquito(MosquitoAgent mosquito)
     {
         if (mosquito == null || !activeMosquitoes.Remove(mosquito))
@@ -118,6 +119,19 @@ public class MosquitoManager : MonoBehaviour
 
         mosquito.gameObject.SetActive(false);
         mosquitoPool.Push(mosquito);
+    }
+
+    public bool TryDespawnMosquito(MosquitoAgent mosquito)
+    {
+        // Return true only when active mosquito was returned to pool
+        if (mosquito == null || !activeMosquitoes.Remove(mosquito))
+        {
+            return false;
+        }
+        mosquito.ResetAgent();
+        mosquito.gameObject.SetActive(false);
+        mosquitoPool.Push(mosquito);
+        return true;
     }
 
     public void SetAllTask(MosquitoAgent.Task task)
@@ -155,6 +169,12 @@ public class MosquitoManager : MonoBehaviour
             new Vector3(target.position.x,
             target.position.y,
             target.position.z));
+    }
+
+    public void MoveOneTo(MosquitoAgent mosquito, Transform target, float stopDistance)
+    {
+        // Add this overload
+        mosquito.MoveTo(target.position, stopDistance);
     }
 
     public void FleeAllFrom(Vector3 target)
