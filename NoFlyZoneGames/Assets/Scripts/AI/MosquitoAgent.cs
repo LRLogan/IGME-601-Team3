@@ -214,7 +214,7 @@ public class MosquitoAgent : MonoBehaviour
         Vector3 finalVelocity = navigationVelocity + jitterVelocity + mExternalVelocity;
         MoveWithCollision(finalVelocity * Time.deltaTime);
 
-        mExternalVelocity = Vector3.MoveTowards(
+        mExternalVelocity = Vector3.Lerp(
             mExternalVelocity, Vector3.zero, externalDrag * Time.deltaTime);
 
         SyncNavMeshPosition();

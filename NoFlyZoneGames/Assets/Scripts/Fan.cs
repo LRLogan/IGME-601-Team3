@@ -16,39 +16,20 @@ public class Fan : MonoBehaviour, IItemEffect
     public void Start()
     {
         itemName = "fan";
-        //radius = 15.0f;
-        strength = 5f;
-
-        // Change length of fan hitbox to radius size
-        hitbox.size = new Vector3(radius, 1, 1);
-        hitbox.center = new Vector3(radius / 2, 0, 0);
     }
 
-    public void OnTriggerStay(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (!effectActive)
-        {
             return;
-        }
 
-        if (other.CompareTag("Mosquito"))
-        {
-            Debug.Log("Mosquito detected!");
-            MosquitoAgent mosquito = other.GetComponent<MosquitoAgent>();
+        if (!other.CompareTag("Mosquito"))
+            return;
 
-            if (mosquito != null)
-            {
-                Push(mosquito);
-            }
-        }
-    }
+        MosquitoAgent mosquito = other.GetComponentInParent<MosquitoAgent>();
 
-    public void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Mosquito"))
-        {
-            //mosquitoRb.linearVelocity = Vector3.zero;
-        }
+        if (mosquito != null)
+            Push(mosquito);
     }
 
     /// <summary>
@@ -58,14 +39,17 @@ public class Fan : MonoBehaviour, IItemEffect
     public void Push(MosquitoAgent mosquito)
     {
         // Switching off stops adding new force, but doesn't erase the force already applied
-        if (!effectActive)
+        if (!effectActive || mosquito == null)
         {
             return;
         }
 
+        Debug.Log("Mosquito detected in Fan");
+
         // Get the push direction away from the fan.
         Vector3 direction = mosquito.transform.position - transform.position;
         direction.Normalize();
+        Debug.DrawRay(transform.position, direction, Color.red);
 
         mosquito.AddForce(
             direction * strength,
