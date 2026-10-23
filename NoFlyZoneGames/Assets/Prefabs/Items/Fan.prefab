@@ -157,6 +157,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PickupItem
   rb: {fileID: 536186641282255653}
   placementRadius: 0.25
+  aoeCollider: {fileID: 1796104908579323214}
 --- !u!114 &7451675374088676280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,6 +170,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c59ea600bc7602a46acdc945dc5c95c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Fan
+  radius: 0
+  strength: 0
   hitbox: {fileID: 1796104908579323214}
 --- !u!1 &3319321713842284559
 GameObject:

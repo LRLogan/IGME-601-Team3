@@ -28,6 +28,30 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private Material validPreviewMaterial;
     [SerializeField] private Material invalidPreviewMaterial;
 
+    [SerializeField] private Material aoeValidMaterial;
+    [SerializeField] private Material aoeInvalidMaterial;
+
+    [Header("Rotation")]
+    // A 1D Axis action bound to the mouse scroll wheel (Mouse/scroll/y).
+    [SerializeField] private InputActionReference rotateAction;
+
+    // How far the held item rotates per scroll tick, in degrees.
+    [SerializeField] private float rotationStep = 15f;
+
+    // The player-controlled yaw (degrees) added on top of the camera-facing
+    // rotation. Reset each time an item is picked up.
+    private float placementYaw;
+
+    // Translucent sphere or box showing the held item's AOE at the placement spot.
+    private GameObject aoeIndicator;
+
+    // The AOE indicator's renderer, cached so its material can be swapped.
+    private Renderer aoeRenderer;
+
+    // The held item's AOE shape, size and offset from the item's pivot,
+    // cached when the item is picked up.
+    private PickupItem.AoeShape aoeShape;
+
     // The item currently being held by the player.
     private PickupItem heldItem;
 
@@ -82,6 +106,12 @@ public class PlayerInteraction : MonoBehaviour
 
         // Call OnInteract whenever the interaction button is pressed.
         interactAction.action.performed += OnInteract;
+
+        // Enable the rotation input action (optional).
+        if (rotateAction != null)
+        {
+            rotateAction.action.Enable();
+        }
     }
 
     private void OnDisable()
@@ -91,6 +121,11 @@ public class PlayerInteraction : MonoBehaviour
 
         // Disable the input action.
         interactAction.action.Disable();
+
+        if (rotateAction != null)
+        {
+            rotateAction.action.Disable();
+        }
     }
 
     private void Update()
@@ -98,8 +133,35 @@ public class PlayerInteraction : MonoBehaviour
         // Continuously update placement while holding an item.
         if (heldItem != null)
         {
+            // Rotation is read before placement so it still updates even
+            // while the player is not aiming at a valid surface.
+            HandleRotationInput();
             UpdatePlacement();
         }
+    }
+
+    /// <summary>
+    /// Rotates the held item's placement yaw by one step per scroll tick.
+    /// </summary>
+    private void HandleRotationInput()
+    {
+        if (rotateAction == null)
+        {
+            return;
+        }
+
+        // Scroll is a per-frame delta whose size varies by platform and mouse,
+        // so only its direction is used. Each tick is one fixed step.
+        float scroll = rotateAction.action.ReadValue<float>();
+
+        if (Mathf.Approximately(scroll, 0f))
+        {
+            return;
+        }
+
+        placementYaw = Mathf.Repeat(
+            placementYaw + Mathf.Sign(scroll) * rotationStep,
+            360f);
     }
 
     /// <summary>
@@ -148,8 +210,8 @@ public class PlayerInteraction : MonoBehaviour
 
         // Do not pick anything up if the object is out of interaction range.
         if (!Physics.Raycast(
-            ray, 
-            out RaycastHit hit, 
+            ray,
+            out RaycastHit hit,
             interactionRange,
             Physics.DefaultRaycastLayers,
             QueryTriggerInteraction.Ignore))
@@ -169,6 +231,11 @@ public class PlayerInteraction : MonoBehaviour
         // Cache on pickup
         heldItem = item;
         heldCollider = GetSolidCollider(heldItem.gameObject);
+
+        // Start each pickup facing the camera direction with no extra rotation.
+        placementYaw = 0f;
+
+        // Must run before heldItem.PickUp() so the AOE is read in world space.
         CreatePlacementPreview();
 
         // Attach the real item to the player's hold point.
@@ -189,6 +256,71 @@ public class PlayerInteraction : MonoBehaviour
 
         // Remove components that could interfere with the preview.
         RemovePreviewComponents(placementPreview);
+
+        CreateAoeIndicator();
+    }
+
+    /// <summary>
+    /// Creates a translucent sphere or box showing the held item's area of effect.
+    /// </summary>
+    private void CreateAoeIndicator()
+    {
+        DestroyAoeIndicator();
+
+        // The indicator is its own object (not a child of the preview) so the
+        // preview's valid/invalid material swap and scale never affect it.
+
+        // Items without an AOE show nothing extra.
+        bool hasAoe = heldItem.TryGetAoe(out aoeShape);
+
+        if (!hasAoe)
+        {
+            return;
+        }
+
+        // Without a material the indicator would render as opaque white.
+        if (validPreviewMaterial == null)
+        {
+            Debug.LogWarning(
+                $"{name}: assign a Valid Preview Material to show item AOEs.",
+                this);
+            return;
+        }
+
+        // A sphere or cube, matching the item's AOE collider.
+        aoeIndicator = GameObject.CreatePrimitive(aoeShape.type);
+        aoeIndicator.name = "AOE Preview";
+
+        // Disable the collider immediately so it can't affect placement checks
+        // (Destroy only takes effect at the end of the frame).
+        Collider indicatorCollider = aoeIndicator.GetComponent<Collider>();
+        indicatorCollider.enabled = false;
+        Destroy(indicatorCollider);
+
+        // The default sphere and cube primitives are both 1 unit across.
+        aoeIndicator.transform.localScale = aoeShape.size;
+
+        aoeRenderer = aoeIndicator.GetComponent<Renderer>();
+        aoeRenderer.sharedMaterial = aoeValidMaterial;
+        aoeRenderer.shadowCastingMode =
+            UnityEngine.Rendering.ShadowCastingMode.Off;
+        aoeRenderer.receiveShadows = false;
+
+        // Hidden until a valid surface is found.
+        aoeIndicator.SetActive(false);
+    }
+
+    /// <summary>
+    /// Destroys the AOE indicator.
+    /// </summary>
+    private void DestroyAoeIndicator()
+    {
+        if (aoeIndicator != null)
+        {
+            Destroy(aoeIndicator);
+            aoeIndicator = null;
+            aoeRenderer = null;
+        }
     }
 
     /// <summary>
@@ -221,7 +353,7 @@ public class PlayerInteraction : MonoBehaviour
 
         MonoBehaviour[] monoBehaviours = preview.GetComponentsInChildren<MonoBehaviour>();
 
-        foreach(MonoBehaviour monoBehaviour in monoBehaviours)
+        foreach (MonoBehaviour monoBehaviour in monoBehaviours)
         {
             Destroy(monoBehaviour);
         }
@@ -237,6 +369,8 @@ public class PlayerInteraction : MonoBehaviour
             Destroy(placementPreview);
             placementPreview = null;
         }
+
+        DestroyAoeIndicator();
     }
 
     /// <summary>
@@ -266,6 +400,11 @@ public class PlayerInteraction : MonoBehaviour
                 placementPreview.SetActive(false);
             }
 
+            if (aoeIndicator != null)
+            {
+                aoeIndicator.SetActive(false);
+            }
+
             return;
         }
 
@@ -282,9 +421,9 @@ public class PlayerInteraction : MonoBehaviour
                 Vector3.up);
         }
 
-        placementRotation = Quaternion.LookRotation(
-            flatForward.normalized,
-            Vector3.up);
+        // The player's rotation input is applied on top of the camera-facing yaw.
+        placementRotation = Quaternion.AngleAxis(placementYaw, Vector3.up) *
+            Quaternion.LookRotation(flatForward.normalized, Vector3.up);
 
         // Calculate the item's position on the surface.
         placementPosition = GetPlacementPosition(hit);
@@ -580,6 +719,26 @@ public class PlayerInteraction : MonoBehaviour
         SetPreviewMaterial(
             canPlace ? validPreviewMaterial : invalidPreviewMaterial
         );
+
+        // Place the AOE shape where the item's AOE will sit once placed.
+        // Both the offset and the rotation follow the item, so an off-center
+        // or angled AOE swings around the pivot as the player rotates it.
+        if (aoeIndicator != null)
+        {
+            aoeIndicator.SetActive(true);
+            aoeIndicator.transform.SetPositionAndRotation(
+                placementPosition + placementRotation * aoeShape.centerOffset,
+                placementRotation * aoeShape.rotationOffset);
+
+            // Match the AOE color to placement validity, like the item preview.
+            Material aoeMaterial =
+                canPlace ? aoeValidMaterial : aoeInvalidMaterial;
+
+            if (aoeMaterial != null)
+            {
+                aoeRenderer.sharedMaterial = aoeMaterial;
+            }
+        }
     }
 
     /// <summary>

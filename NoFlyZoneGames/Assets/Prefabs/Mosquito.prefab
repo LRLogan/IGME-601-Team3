@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7928833489247238951}
   - component: {fileID: 2598603019665538961}
   - component: {fileID: 201081370037728589}
-  - component: {fileID: 8010644868063716210}
+  - component: {fileID: 6244386831993450712}
   m_Layer: 8
   m_Name: Mosquito
   m_TagString: Mosquito
@@ -127,17 +127,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1af1e698d4d6ef4db56589802cedbb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MosquitoAgent
-  moveSpeed: 2
-  arriveDistance: 1
+  moveSpeed: 3
+  arriveDistance: 0.5
   fleeDistance: 5
   mMass: 1
-  mMaxSpeed: 3
+  mMaxSpeed: 4
   mMaxForce: 10
-  maxHeight: 10
-  minHeight: 10
-  jitterRadius: 0.75
-  jitterForce: 1.5
-  jitterChangeInterval: 0.15
+  obstacleLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  collisionRadius: 0.25
+  collisionSkin: 0.02
+  verticalSpeed: 3
+  verticalAcceleration: 10
+  flightVariation: 0.75
+  variationFrequency: 1
+  jitterRadius: 0.25
+  jitterForce: 2
+  maxJitterSpeed: 6
+  jitterChangeInterval: 0.25
   externalDrag: 2
 --- !u!195 &201081370037728589
 NavMeshAgent:
@@ -161,7 +169,7 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &8010644868063716210
+--- !u!114 &6244386831993450712
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
