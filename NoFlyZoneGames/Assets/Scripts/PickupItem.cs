@@ -19,6 +19,8 @@ public class PickupItem : MonoBehaviour
     // AOE preview.
     [SerializeField] private Collider aoeCollider;
 
+    private Transform roomParent;
+
     // Tracks whether the item is currently being held by the player.
     private bool isHeld;
 
@@ -159,7 +161,7 @@ public class PickupItem : MonoBehaviour
             // Prevent the held object from colliding with the player or environment.
             rb.detectCollisions = false;
         }
-
+        roomParent = rb.gameObject.transform.parent;
         // Parent the item to the player's hold point.
         transform.SetParent(holdPoint, false);
 
@@ -191,7 +193,7 @@ public class PickupItem : MonoBehaviour
         isHeld = false;
 
         // Remove the item from the player's hold point.
-        transform.SetParent(null);
+        transform.SetParent(roomParent);
 
         // Move the item to the calculated placement position.
         transform.SetPositionAndRotation(position, rotation);
