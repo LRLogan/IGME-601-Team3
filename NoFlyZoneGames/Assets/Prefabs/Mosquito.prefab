@@ -138,6 +138,9 @@ MonoBehaviour:
     m_Bits: 128
   collisionRadius: 0.25
   collisionSkin: 0.02
+  avoidanceDistance: 1.5
+  avoidanceRadius: 0.35
+  avoidanceStrength: 1.25
   verticalSpeed: 3
   verticalAcceleration: 10
   flightVariation: 0.75
