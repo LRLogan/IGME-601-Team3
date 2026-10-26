@@ -389,6 +389,14 @@ PrefabInstance:
       propertyPath: spawnRadius
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 6324999566732845486, guid: 052dd78b868770146ba89a7e2ec3832f, type: 3}
+      propertyPath: mosquitoManager
+      value: 
+      objectReference: {fileID: 833627285}
+    - target: {fileID: 6324999566732845486, guid: 052dd78b868770146ba89a7e2ec3832f, type: 3}
+      propertyPath: collisionLayers.m_Bits
+      value: 192
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1028,6 +1036,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0fd99acd18f79a4385fe49f83bffb67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Level2Prototype_SM
+  mosquitoSpawner: {fileID: 0}
 --- !u!4 &1357039537
 Transform:
   m_ObjectHideFlags: 0
@@ -1095,6 +1104,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4002062449679107633, guid: a80ea3fd1d36aef4e87b1c5aff69a778, type: 3}
+      propertyPath: mManager
+      value: 
+      objectReference: {fileID: 833627285}
     - target: {fileID: 6746183034812459713, guid: a80ea3fd1d36aef4e87b1c5aff69a778, type: 3}
       propertyPath: m_Name
       value: MosquitoTarget
