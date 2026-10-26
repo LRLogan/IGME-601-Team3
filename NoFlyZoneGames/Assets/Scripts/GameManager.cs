@@ -1,4 +1,5 @@
 
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -7,9 +8,13 @@ public class GameManager : MonoBehaviour
 {
     // This instance
     private GameObject managerObjInstance;
-    private GameManager instance;
+    private static GameManager instance;
 
-    [SerializeField] private string startingSceneName;
+    // Connect Title screen, menu and game
+    [SerializeField] private string titleSceneName;
+    [SerializeField] private string mainMenuSceneName;
+    [SerializeField] private string gameplaySceneName;
+
 
     private void Awake()
     {
@@ -35,12 +40,50 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void OpenMainMenu()
+    {
+        LoadScene(mainMenuSceneName);
+    }
+
+    public void StartGame()
+    {
+        LoadScene(gameplaySceneName);
+    }
+
+    public void ReturnToTitle()
+    {
+        LoadScene(titleSceneName);
+    }
+
+    private void LoadScene(string sceneName)
+    {
+        if (string.IsNullOrWhiteSpace(sceneName))
+        {
+            Debug.LogWarning("Assign a destination scene in GameManager.", this);
+            return;
+        }
+        if (!Application.CanStreamedLevelBeLoaded(sceneName))
+        {
+            Debug.LogWarning($"Scene '{sceneName}' cannot be loaded.", this);
+            return;
+        }
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+    }
+
+    private void OnDestory()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
+
     /// <summary>
     /// New game option from start menu
     /// </summary>
     public void NewGame()
     {
-        SceneManager.LoadScene(startingSceneName);
+        StartGame();
     }
 
     /// <summary>
