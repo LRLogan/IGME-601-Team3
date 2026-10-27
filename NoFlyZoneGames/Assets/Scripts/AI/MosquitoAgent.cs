@@ -28,6 +28,13 @@ public class MosquitoAgent : MonoBehaviour
     [SerializeField] private float collisionRadius = 0.25f;
     [SerializeField] private float collisionSkin = 0.02f;
 
+    [Header("Predictive Obstacle Avoidance")]
+    [SerializeField] private float avoidanceDistance = 2f;
+    [SerializeField] private float avoidanceRadius = 0.35f;
+    [SerializeField] private float avoidanceStrength = 1f;
+
+    private readonly RaycastHit[] mObstacleHits = new RaycastHit[24];
+
     [Header("Vertical Flight")]
     [SerializeField] private float verticalSpeed = 3f;
     [SerializeField] private float verticalAcceleration = 10f;
@@ -58,7 +65,7 @@ public class MosquitoAgent : MonoBehaviour
     private Vector3 mJitterVelocity;
     private float mFlightSeed;
     private readonly Stack<MovementTarget> mTargetStack = new Stack<MovementTarget>();
-    private float defaultNavStoppingDistance;
+    private float defaultNavStopDist;
 
     // External control vars
     // External control is for COMPLETE control over the agent
@@ -76,7 +83,7 @@ public class MosquitoAgent : MonoBehaviour
     {
         mAgent = GetComponent<NavMeshAgent>();
 
-        defaultNavStoppingDistance = mAgent.stoppingDistance;
+        defaultNavStopDist = mAgent.stoppingDistance;
 
         // NavMeshAgent is responsible for calculating the path,
         // but NOT for moving or rotating the mosquito.
@@ -84,6 +91,9 @@ public class MosquitoAgent : MonoBehaviour
         mAgent.updateRotation = false;
 
         mAgent.speed = moveSpeed;
+        mAgent.autoRepath = true;
+        mAgent.obstacleAvoidanceType =
+            ObstacleAvoidanceType.HighQualityObstacleAvoidance;
 
         mFlightSeed = Random.Range(0f, 1000f);
         jitterTarget = Random.insideUnitSphere * jitterRadius;
@@ -137,7 +147,7 @@ public class MosquitoAgent : MonoBehaviour
         if (mFleeing)
         {
             // Restore normal navigation setting
-            mAgent.stoppingDistance = defaultNavStoppingDistance;
+            mAgent.stoppingDistance = defaultNavStopDist;
             CurrentTask = Task.Move;
             return;
         }
@@ -150,7 +160,7 @@ public class MosquitoAgent : MonoBehaviour
 
         mTarget = CurrentTarget;
 
-        mAgent.stoppingDistance = Mathf.Min(defaultNavStoppingDistance, CurrentStopDistance * 0.5f);
+        mAgent.stoppingDistance = Mathf.Min(defaultNavStopDist, CurrentStopDistance * 0.5f);
 
         // Map the 3D destination onto the surface used for XZ routing.
         // This DOES NOT replace mTarget.y, which is used for flight.
@@ -409,7 +419,10 @@ public class MosquitoAgent : MonoBehaviour
         desired.y = 0f;
         if (desired.sqrMagnitude < 0.0001f) return;
 
-        SteerHorizontal(desired.normalized * moveSpeed);
+        desired = desired.normalized * moveSpeed;
+        desired = AvoidObstacles(desired); // sanitize for obsticles 
+
+        SteerHorizontal(desired);
     }
 
     private void SteerHorizontal(Vector3 desiredXZ)
@@ -501,6 +514,100 @@ public class MosquitoAgent : MonoBehaviour
 
             Seek();
         }
+    }
+
+    private Vector3 AvoidObstacles(Vector3 desiredVelo)
+    {
+        Vector3 dir = desiredVelo.normalized;
+
+        // Spherecast to check for nearby obsticles 
+        int hitCount = Physics.SphereCastNonAlloc(
+            transform.position,
+            avoidanceRadius,
+            dir,
+            mObstacleHits,
+            avoidanceDistance,
+            ~0,
+            QueryTriggerInteraction.Ignore);
+
+        RaycastHit closestHit = default(RaycastHit);
+        NavMeshObstacle closestObstacle = null;
+        float closestDistance = float.MaxValue;
+
+        for (int i = 0; i < hitCount; ++i)
+        {
+            RaycastHit hit = mObstacleHits[i];
+
+            // Only respond to NavMeshObstacle objects
+            NavMeshObstacle obstacle =
+                hit.collider.GetComponentInParent<NavMeshObstacle>();
+
+            if (obstacle == null || !obstacle.isActiveAndEnabled)
+                continue;
+
+            // Don't detect our own hierarchy
+            if (hit.collider.transform.root == transform.root)
+                continue;
+
+            // Helps not complicate behavior on stationary objects can remove if needed
+            if (hit.collider.gameObject.layer == ~7) 
+                continue;
+
+            if (hit.distance < closestDistance)
+            {
+                closestHit = hit;
+                closestDistance = hit.distance;
+                closestObstacle = obstacle;
+            }
+        }
+
+        if (closestObstacle == null) return desiredVelo;
+
+        // Horizontal direction from the obstacle toward the mosquito
+        Vector3 away = transform.position -
+            closestHit.collider.bounds.center;
+        away.y = 0f;
+
+        // Calculate horizontal perpendicular direction
+        Vector3 right = Vector3.Cross(Vector3.up, dir);
+
+        // Choose a side that leads away from the obstacle center
+        // This may have to be changed later to better accound for other obsticles / cur dir
+        float side = Vector3.Dot(right, away) >= 0f ? 1f : -1f;
+
+        Vector3 sideways = right * side;
+
+        // Steering to the side with a small puch away from surface
+        Vector3 normal = closestHit.normal;
+        normal.y = 0f;
+
+        Vector3 avoidanceDirection =
+            sideways + normal.normalized * 0.35f;
+
+        avoidanceDirection.Normalize();
+
+        // Increase the influence as the obstacle gets closer
+        float proximity = 1f - Mathf.Clamp01(
+            closestDistance / Mathf.Max(0.01f, avoidanceDistance)
+        );
+
+        float weight = Mathf.Clamp01(
+            proximity * avoidanceStrength
+        );
+
+        Vector3 adjustedDirection = Vector3.Lerp(
+            dir,
+            avoidanceDirection,
+            weight
+        ).normalized;
+
+        Debug.DrawRay(
+            transform.position,
+            adjustedDirection * avoidanceDistance,
+            Color.yellow
+        );
+
+        return adjustedDirection * moveSpeed;
     }
 
     #endregion
@@ -658,7 +765,7 @@ public class MosquitoAgent : MonoBehaviour
         jitterTarget = Random.insideUnitSphere * jitterRadius;
         CurrentTask = Task.Idle;
 
-        mAgent.stoppingDistance = defaultNavStoppingDistance;
+        mAgent.stoppingDistance = defaultNavStopDist;
 
         if (mAgent.isOnNavMesh)
         {
