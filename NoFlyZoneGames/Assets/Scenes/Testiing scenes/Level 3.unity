@@ -171,6 +171,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PushBlock (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 6403319474520164778, guid: 647ef8a5689e7d5469ec00a6677a60a0, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -718,6 +722,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MosquitoManager
   pointB: {fileID: 165863882}
+  mosquitoPrefab: {fileID: 0}
+  initialPoolSize: 10
 --- !u!4 &165863882
 Transform:
   m_ObjectHideFlags: 0
@@ -1202,6 +1208,10 @@ PrefabInstance:
     - target: {fileID: 6403319474520164778, guid: 647ef8a5689e7d5469ec00a6677a60a0, type: 3}
       propertyPath: m_Name
       value: PushBlock (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6403319474520164778, guid: 647ef8a5689e7d5469ec00a6677a60a0, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2275,6 +2285,10 @@ PrefabInstance:
     - target: {fileID: 6403319474520164778, guid: 647ef8a5689e7d5469ec00a6677a60a0, type: 3}
       propertyPath: m_Name
       value: PushBlock
+      objectReference: {fileID: 0}
+    - target: {fileID: 6403319474520164778, guid: 647ef8a5689e7d5469ec00a6677a60a0, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
