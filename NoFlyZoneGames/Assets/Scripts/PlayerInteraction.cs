@@ -11,7 +11,7 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private Transform holdPoint;
 
     [Header("Interaction")]
-    [SerializeField] private float interactionRange = 3f;
+    [SerializeField] private float interactionRange = 5f;
     [SerializeField] private InputActionReference interactAction;
 
     [Header("Placement")]
