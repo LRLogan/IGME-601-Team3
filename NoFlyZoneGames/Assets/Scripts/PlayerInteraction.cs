@@ -11,7 +11,7 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private Transform holdPoint;
 
     [Header("Interaction")]
-    [SerializeField] private float interactionRange = 3f;
+    [SerializeField] private float interactionRange = 5f;
     [SerializeField] private InputActionReference interactAction;
 
     [Header("Placement")]
@@ -52,6 +52,9 @@ public class PlayerInteraction : MonoBehaviour
     // cached when the item is picked up.
     private PickupItem.AoeShape aoeShape;
 
+    // The item the player is currently looking at within interaction range.
+    private PickupItem hoveredItem;
+
     // The item currently being held by the player.
     private PickupItem heldItem;
 
@@ -75,14 +78,28 @@ public class PlayerInteraction : MonoBehaviour
 
     public bool CanPickUpItem()
     {
-        if (heldItem != null || playerCamera == null)
-            return false;
+        return heldItem == null && GetLookedAtItem() != null;
+    }
 
+    /// <summary>
+    /// Gets the pickup item the player is looking at within interaction range.
+    /// </summary>
+    /// <returns>The item, or null if there is none in range or it is 
+    /// already held.</returns>
+    private PickupItem GetLookedAtItem()
+    {
+        if (playerCamera == null)
+        {
+            return null;
+        }
+
+        // Shoot a ray from the center of the player's camera.
         Ray ray = new Ray(
             playerCamera.transform.position,
             playerCamera.transform.forward
         );
 
+        // Ignore anything that is out of interaction range.
         if (!Physics.Raycast(
             ray,
             out RaycastHit hit,
@@ -90,13 +107,19 @@ public class PlayerInteraction : MonoBehaviour
             Physics.DefaultRaycastLayers,
             QueryTriggerInteraction.Ignore))
         {
-            return false;
+            return null;
         }
 
-        PickupItem item =
-            hit.collider.GetComponentInParent<PickupItem>();
+        // Look for a PickupItem on the object that was hit.
+        PickupItem item = hit.collider.GetComponentInParent<PickupItem>();
 
-        return item != null && !item.IsHeld;
+        // Ignore objects that are not pickupable or are already being held.
+        if (item == null || item.IsHeld)
+        {
+            return null;
+        }
+
+        return item;
     }
 
     private void OnEnable()
@@ -126,6 +149,13 @@ public class PlayerInteraction : MonoBehaviour
         {
             rotateAction.action.Disable();
         }
+
+        // Don't leave a hover indicator behind when this component is disabled.
+        if (heldItem == null)
+        {
+            hoveredItem = null;
+            DestroyAoeIndicator();
+        }
     }
 
     private void Update()
@@ -138,6 +168,52 @@ public class PlayerInteraction : MonoBehaviour
             HandleRotationInput();
             UpdatePlacement();
         }
+        else
+        {
+            // Otherwise, show the AOE of whatever the player is looking at.
+            UpdateHoverAoe();
+        }
+    }
+
+    /// <summary>
+    /// Shows the AOE of the item the player is looking at, and hides it when
+    /// the player looks away or leaves interaction range.
+    /// </summary>
+    private void UpdateHoverAoe()
+    {
+        PickupItem lookedAtItem = GetLookedAtItem();
+
+        // Build a new indicator whenever the targeted item changes.
+        if (lookedAtItem != hoveredItem)
+        {
+            hoveredItem = lookedAtItem;
+
+            if (hoveredItem != null)
+            {
+                CreateAoeIndicator(hoveredItem);
+            }
+        }
+
+        // Nothing is targeted (or the item was destroyed), so hide the indicator.
+        if (hoveredItem == null)
+        {
+            DestroyAoeIndicator();
+            return;
+        }
+
+        // The item has no AOE, or no preview material was assigned.
+        if (aoeIndicator == null)
+        {
+            return;
+        }
+
+        // Follow the item in case it is still moving, such as after being placed.
+        Transform itemTransform = hoveredItem.transform;
+
+        aoeIndicator.transform.SetPositionAndRotation(
+            itemTransform.position + itemTransform.rotation * aoeShape.centerOffset,
+            itemTransform.rotation * aoeShape.rotationOffset);
+        aoeIndicator.SetActive(true);
     }
 
     /// <summary>
@@ -202,28 +278,11 @@ public class PlayerInteraction : MonoBehaviour
     /// </summary>
     private void TryPickUpItem()
     {
-        // Shoot a ray from the center of the player's camera.
-        Ray ray = new Ray(
-            playerCamera.transform.position,
-            playerCamera.transform.forward
-        );
-
-        // Do not pick anything up if the object is out of interaction range.
-        if (!Physics.Raycast(
-            ray,
-            out RaycastHit hit,
-            interactionRange,
-            Physics.DefaultRaycastLayers,
-            QueryTriggerInteraction.Ignore))
-        {
-            return;
-        }
-
-        // Look for a PickupItem on the object that was hit.
-        PickupItem item = hit.collider.GetComponentInParent<PickupItem>();
+        // Find the item the player is looking at within interaction range.
+        PickupItem item = GetLookedAtItem();
 
         // Ignore objects that are not pickupable or are already being held.
-        if (item == null || item.IsHeld)
+        if (item == null)
         {
             return;
         }
@@ -231,6 +290,9 @@ public class PlayerInteraction : MonoBehaviour
         // Cache on pickup
         heldItem = item;
         heldCollider = GetSolidCollider(heldItem.gameObject);
+
+        // The hover indicator is replaced by the placement one created below.
+        hoveredItem = null;
 
         // Start each pickup facing the camera direction with no extra rotation.
         placementYaw = 0f;
@@ -257,13 +319,15 @@ public class PlayerInteraction : MonoBehaviour
         // Remove components that could interfere with the preview.
         RemovePreviewComponents(placementPreview);
 
-        CreateAoeIndicator();
+        CreateAoeIndicator(heldItem);
     }
 
     /// <summary>
     /// Creates a translucent sphere or box showing the held item's area of effect.
+    /// Any existing AOE indicator is replaced.
     /// </summary>
-    private void CreateAoeIndicator()
+    /// <param name="item">The item whose AOE will be shown.</param>
+    private void CreateAoeIndicator(PickupItem item)
     {
         DestroyAoeIndicator();
 
@@ -271,9 +335,7 @@ public class PlayerInteraction : MonoBehaviour
         // preview's valid/invalid material swap and scale never affect it.
 
         // Items without an AOE show nothing extra.
-        bool hasAoe = heldItem.TryGetAoe(out aoeShape);
-
-        if (!hasAoe)
+        if (!item.TryGetAoe(out aoeShape))
         {
             return;
         }
