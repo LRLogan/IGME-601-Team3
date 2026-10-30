@@ -465,6 +465,7 @@ GameObject:
   - component: {fileID: 4839690903715774857}
   - component: {fileID: 8466142797126152336}
   - component: {fileID: 3107252058421647083}
+  - component: {fileID: 3942557505508633119}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -555,6 +556,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &3942557505508633119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6929619296128725024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd386f910f195a840a0ec84739c7a6fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthBarBillboard
 --- !u!1 &8218034768733671680
 GameObject:
   m_ObjectHideFlags: 0
