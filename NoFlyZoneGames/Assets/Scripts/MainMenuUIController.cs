@@ -36,4 +36,26 @@ public class MainMenuUIController : MonoBehaviour
     {
         AudioListener.volume = value;
     }
+
+    public void PlayGame()
+    {
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("No GameManager found. Start from TitleScene.", this);
+            return;
+        }
+
+        GameManager.Instance.StartGame();
+    }
+
+    public void QuitGame()
+    {
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("No GameManager found. Start from TitleScene.", this);
+            return;
+        }
+
+        GameManager.Instance.QuitGame();
+    }
 }
