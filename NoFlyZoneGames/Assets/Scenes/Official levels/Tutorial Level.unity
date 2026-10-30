@@ -3538,6 +3538,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1555405360}
     m_Modifications:
+    - target: {fileID: 1072079839190679658, guid: 82739db5cc6f1064a8f3203057075818, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2389818643338007942, guid: 82739db5cc6f1064a8f3203057075818, type: 3}
       propertyPath: m_Name
       value: Eletric Fan Animation
@@ -4603,6 +4607,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1447027368912864866, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.21737
+      objectReference: {fileID: 0}
+    - target: {fileID: 1447027368912864866, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -4628,11 +4636,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3778988434548663601, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.552
+      value: 1.8893584
       objectReference: {fileID: 0}
     - target: {fileID: 3778988434548663601, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4395242402627218313, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4395242402627218313, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4696,7 +4708,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8362280600851309633, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.552
+      value: 1.8893584
       objectReference: {fileID: 0}
     - target: {fileID: 8362280600851309633, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: m_LocalPosition.z
