@@ -8,6 +8,9 @@ public class PauseMenuController : MonoBehaviour
     [SerializeField] private FirstPersonController playerController;
     [SerializeField] private PlayerInteraction playerInteraction;
     [SerializeField] private StarterAssetsInputs playerInputs;
+    
+    [Header("HUD")]
+    [SerializeField] private GameObject hudCanvas;
 
     private bool isPaused;
     private float previousTimeScale;
@@ -57,6 +60,10 @@ public class PauseMenuController : MonoBehaviour
 
         SetCursorForMenu(true);
         pausePanel.SetActive(true);
+
+        if (hudCanvas != null)
+            hudCanvas.SetActive(false);
+
     }
 
     public void ResumeGame()
@@ -74,6 +81,9 @@ public class PauseMenuController : MonoBehaviour
 
         pausePanel.SetActive(false);
         SetCursorForMenu(false);
+        
+        if (hudCanvas != null)
+            hudCanvas.SetActive(true);
     }
 
     public void ReturnToMainMenu()
