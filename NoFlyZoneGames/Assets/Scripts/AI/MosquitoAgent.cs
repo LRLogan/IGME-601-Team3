@@ -22,6 +22,7 @@ public class MosquitoAgent : MonoBehaviour
     [SerializeField] private float mMass = 1f;
     [SerializeField] private float mMaxSpeed = 4f;
     [SerializeField] private float mMaxForce = 10f;
+    [SerializeField] private float mMinVerticalClamp = 0.5f;
 
     [Header("Movement Collision")]
     [SerializeField] private LayerMask obstacleLayers;
@@ -307,10 +308,16 @@ public class MosquitoAgent : MonoBehaviour
                 safeMovement += slideDirection * slideDistance;
             }
 
+            // Min vertical clamp check
+            if ((transform.position + safeMovement).y <= mMinVerticalClamp)
+                safeMovement.y = 0;
             transform.position += safeMovement;
         }
         else
         {
+            // Min vertical clamp check
+            if ((transform.position + displacement).y <= mMinVerticalClamp)
+                displacement.y = 0;
             transform.position += displacement;
         }
     }
