@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     // This instance
     private GameObject managerObjInstance;
     private static GameManager instance;
+    public static GameManager Instance => instance;
 
     // Connect Title screen, menu and game
     [SerializeField] private string titleSceneName;
@@ -70,7 +71,7 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
     }
 
-    private void OnDestory()
+    private void OnDestroy()
     {
         if (instance == this)
         {
