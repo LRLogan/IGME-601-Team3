@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.InputSystem;
 
 public class MosquitoSpawner : MonoBehaviour
 {
@@ -28,15 +27,6 @@ public class MosquitoSpawner : MonoBehaviour
     private void OnDestroy()
     {
         DestroySpawnIndicator();
-    }
-
-    // temporary test hook
-    private void Update()
-    {
-        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
-        {
-            SpawnMosquito();
-        }
     }
 
     public MosquitoAgent SpawnMosquito()

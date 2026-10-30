@@ -100,6 +100,7 @@ MonoBehaviour:
   countdownGroup: {fileID: 4357392409033705229}
   countdownLabel: {fileID: 5890082309732860904}
   countdownText: {fileID: 8916976910655709143}
+  waveCompleteMessage: {fileID: 0}
   interactionPrompt: {fileID: 208225008054506925}
   actionText: {fileID: 6913206074240124484}
   playerInteraction: {fileID: 0}
