@@ -61,7 +61,8 @@ public class Fan : MonoBehaviour, IItemEffect
 
         mosquito.AddForce(
             direction * strength,
-            ForceMode.Force);
+            ForceMode.Force, 
+            true); //locking the Y so the fan never pushes the mosquito down
     }
 
     // Utilize the item effect interface to turn the fan on and off

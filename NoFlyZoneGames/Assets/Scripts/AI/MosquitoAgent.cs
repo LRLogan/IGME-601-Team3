@@ -724,8 +724,13 @@ public class MosquitoAgent : MonoBehaviour
     /// </summary>
     /// <param name="force">Force vector to apply.</param>
     /// <param name="mode">How the force should affect velocity.</param>
-    public void AddForce(Vector3 force, ForceMode mode)
+    public void AddForce(Vector3 force, ForceMode mode, bool lockY = false)
     {
+        if (lockY)
+        {
+            force.y = 0f;
+        }
+
         switch (mode)
         {
             case ForceMode.Force:
