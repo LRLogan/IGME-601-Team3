@@ -557,6 +557,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 143824825}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &170636325
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 170636327}
+  - component: {fileID: 170636326}
+  m_Layer: 0
+  m_Name: SceneManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &170636326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 170636325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1c6965bedb5f544a90a8d711b137ffc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FinalLvl_SM
+  mosquitoSpawners:
+  - {fileID: 1832175267}
+  - {fileID: 1905698578}
+  mosquitoManager: {fileID: 308368004}
+  numMosquitos: 
+  timeBetweenWaves: 10
+  spawnRetryInterval: 1
+  waveText: {fileID: 0}
+  countdownText: {fileID: 0}
+--- !u!4 &170636327
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 170636325}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.84499, y: 0.001, z: 2.04247}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &181303292 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2589939470228209828, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
@@ -2839,6 +2892,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1832175267 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6324999566732845486, guid: 052dd78b868770146ba89a7e2ec3832f, type: 3}
+  m_PrefabInstance: {fileID: 518536524}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48ec50977d4680f4bae7a1c05243821a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MosquitoSpawner
 --- !u!1001 &1884798309
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2991,6 +3055,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1079972893152665983, guid: 052dd78b868770146ba89a7e2ec3832f, type: 3}
   m_PrefabInstance: {fileID: 1905698576}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1905698578 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6324999566732845486, guid: 052dd78b868770146ba89a7e2ec3832f, type: 3}
+  m_PrefabInstance: {fileID: 1905698576}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48ec50977d4680f4bae7a1c05243821a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MosquitoSpawner
 --- !u!1001 &1960056273
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3459,3 +3534,4 @@ SceneRoots:
   - {fileID: 1822036405}
   - {fileID: 1153932924}
   - {fileID: 563801243}
+  - {fileID: 170636327}
