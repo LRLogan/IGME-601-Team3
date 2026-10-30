@@ -4688,7 +4688,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6895873537425479742, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: Lens.FieldOfView
-      value: 60
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 7112043623862613069, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: m_Name
@@ -4736,7 +4736,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8362280600851309638, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: field of view
-      value: 60
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 8362280600851309638, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: far clip plane
