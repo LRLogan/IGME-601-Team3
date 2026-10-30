@@ -1,11 +1,14 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class PlayerHUDController : MonoBehaviour
 {
     [Header("HUD")]
     [SerializeField] private TMP_Text waveText;
-    [SerializeField] private TMP_Text strikeText;
+    [SerializeField] private Image[] strikeIcons;
+    [SerializeField] private Sprite fullHeart;
+    [SerializeField] private Sprite brokenHeart;
 
     [Header("Interaction Prompt")]
     [SerializeField] private GameObject interactionPrompt;
@@ -41,22 +44,18 @@ public class PlayerHUDController : MonoBehaviour
     // Update strike icons.
     public void SetStrikes(int remaining, int maximum)
     {
-        if (strikeText == null) return;
-
-        maximum = Mathf.Max(0, maximum);
         remaining = Mathf.Clamp(remaining, 0, maximum);
 
-        string icons = "";
-
-        for (int i = 0; i < maximum; i++)
+        for (int i = 0; i < strikeIcons.Length; i++)
         {
-            icons += i < remaining ? "●" : "○";
+            strikeIcons[i].gameObject.SetActive(i < maximum);
 
-            if (i < maximum - 1)
-                icons += " ";
+            if (i < maximum)
+            {
+                strikeIcons[i].sprite =
+                    i < remaining ? fullHeart : brokenHeart;
+            }
         }
-
-        strikeText.text = $"STRIKES: {icons}";
     }
 
     private void UpdateInteractionPrompt()

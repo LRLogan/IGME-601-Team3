@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7928833489247238951}
   - component: {fileID: 2598603019665538961}
   - component: {fileID: 201081370037728589}
-  - component: {fileID: 6244386831993450712}
+  - component: {fileID: 8010644868063716210}
   m_Layer: 8
   m_Name: Mosquito
   m_TagString: Mosquito
@@ -172,7 +172,7 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &6244386831993450712
+--- !u!114 &8010644868063716210
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
