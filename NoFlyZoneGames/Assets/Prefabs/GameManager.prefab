@@ -47,3 +47,4 @@ MonoBehaviour:
   titleSceneName: TitleScene
   mainMenuSceneName: MainMenuScene
   gameplaySceneName: FinalLevel
+  tutorialSceneName: Tutorial Level
