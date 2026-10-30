@@ -4714,9 +4714,37 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8362280600851309633, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8362280600851309633, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8362280600851309633, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8362280600851309633, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8362280600851309633, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0.13
+      objectReference: {fileID: 0}
     - target: {fileID: 8362280600851309638, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: field of view
       value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 8362280600851309638, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: far clip plane
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 8362280600851309638, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: near clip plane
+      value: 0.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
