@@ -14,6 +14,8 @@ public class MainMenuUIController : MonoBehaviour
 
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         BackToMainMenu();
         AudioListener.volume = volumeSlider.value;
     }
@@ -35,5 +37,27 @@ public class MainMenuUIController : MonoBehaviour
     public void SetVolume(float value)
     {
         AudioListener.volume = value;
+    }
+
+    public void PlayGame()
+    {
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("No GameManager found. Start from TitleScene.", this);
+            return;
+        }
+
+        GameManager.Instance.StartGame();
+    }
+
+    public void QuitGame()
+    {
+        if (GameManager.Instance == null)
+        {
+            Debug.LogWarning("No GameManager found. Start from TitleScene.", this);
+            return;
+        }
+
+        GameManager.Instance.QuitGame();
     }
 }
