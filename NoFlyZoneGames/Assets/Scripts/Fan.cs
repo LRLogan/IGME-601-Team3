@@ -10,8 +10,16 @@ public class Fan : MonoBehaviour, IItemEffect
     [SerializeField]
     private float strength;
 
-    [SerializeField]
-    private BoxCollider hitbox;
+    Transform pushPoint;
+
+    //[SerializeField]
+    //private CapsuleCollider hitbox; // Hastag this isn't used?
+    //private BoxCollider hitbox;
+    public void Awake()
+    {
+
+        pushPoint = transform.Find("PushPoint");
+    }
 
     public void Start()
     {
@@ -47,13 +55,14 @@ public class Fan : MonoBehaviour, IItemEffect
         Debug.Log("Mosquito detected in Fan");
 
         // Get the push direction away from the fan.
-        Vector3 direction = mosquito.transform.position - transform.position;
+        Vector3 direction = mosquito.transform.position - pushPoint.position;
         direction.Normalize();
-        Debug.DrawRay(transform.position, direction, Color.red);
+        Debug.DrawRay(pushPoint.position, direction, Color.red);
 
         mosquito.AddForce(
             direction * strength,
-            ForceMode.Force);
+            ForceMode.Force, 
+            true); //locking the Y so the fan never pushes the mosquito down
     }
 
     // Utilize the item effect interface to turn the fan on and off

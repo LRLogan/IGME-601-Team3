@@ -15,6 +15,8 @@ public class MosquitoManager : MonoBehaviour
     private List<MosquitoAgent> activeMosquitoes = new();
     private Stack<MosquitoAgent> mosquitoPool = new();
 
+    public int ActiveMosquitoCount => activeMosquitoes.Count;
+
     private void Start()
     {
         /*
