@@ -126,6 +126,44 @@ public class PickupItem : MonoBehaviour
             shape.size = Vector3.one * (sphere.radius * maxScale * 2f);
             localCenter = sphere.center;
         }
+        else if (aoeCollider is CapsuleCollider capsule) 
+        {
+            shape.type = PrimitiveType.Capsule;
+            float radius = capsule.radius;
+            float height = capsule.height;
+
+            Vector3 absScale = new Vector3(
+                Mathf.Abs(scale.x),
+                Mathf.Abs(scale.y),
+                Mathf.Abs(scale.z));
+
+            // Scale the capsule according to its direction. (capsules can go along x y or z axis)
+            switch (capsule.direction)
+            {
+                case 0: // X axis
+                    shape.size = new Vector3(
+                        height * absScale.x,
+                        radius * 2f * absScale.y,
+                        radius * 2f * absScale.z);
+                    break;
+
+                case 1: // Y axis
+                    shape.size = new Vector3(
+                        radius * 2f * absScale.x,
+                        height * absScale.y,
+                        radius * 2f * absScale.z);
+                    break;
+
+                case 2: // Z axis
+                    shape.size = new Vector3(
+                        radius * 2f * absScale.x,
+                        radius * 2f * absScale.y,
+                        height * absScale.z);
+                    break;
+            }
+
+            localCenter = capsule.center;
+        }
         else
         {
             return false;

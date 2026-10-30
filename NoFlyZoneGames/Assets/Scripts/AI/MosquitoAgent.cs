@@ -557,7 +557,7 @@ public class MosquitoAgent : MonoBehaviour
                 continue;
 
             // Helps not complicate behavior on stationary objects can remove if needed
-            if (hit.collider.gameObject.layer == ~7) 
+            if (hit.collider.gameObject.layer == ~7)
                 continue;
 
             if (hit.distance < closestDistance)

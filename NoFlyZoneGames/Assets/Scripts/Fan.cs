@@ -11,7 +11,8 @@ public class Fan : MonoBehaviour, IItemEffect
     private float strength;
 
     [SerializeField]
-    private BoxCollider hitbox;
+    private CapsuleCollider hitbox; // Hastag this isn't used?
+    //private BoxCollider hitbox;
 
     public void Start()
     {

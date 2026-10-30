@@ -133,7 +133,6 @@ MonoBehaviour:
   mMass: 1
   mMaxSpeed: 4
   mMaxForce: 10
-  mMinVerticalClamp: 0.25
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 128
