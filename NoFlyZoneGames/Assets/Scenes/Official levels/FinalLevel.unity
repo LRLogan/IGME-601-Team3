@@ -1080,6 +1080,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 307822203}
+  - component: {fileID: 307822204}
   m_Layer: 0
   m_Name: Room4
   m_TagString: Untagged
@@ -1113,6 +1114,22 @@ Transform:
   - {fileID: 1442146929}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &307822204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 307822202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f16646b5a319c7544a2d32ac579ac14b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PauseMenuController
+  pausePanel: {fileID: 275166324}
+  playerController: {fileID: 181303298}
+  playerInteraction: {fileID: 181303297}
+  playerInputs: {fileID: 181303292}
 --- !u!1 &308368003
 GameObject:
   m_ObjectHideFlags: 0
@@ -4288,9 +4305,9 @@ SceneRoots:
   - {fileID: 2000062471}
   - {fileID: 1417527778}
   - {fileID: 531946737}
-  - {fileID: 1128768922}
   - {fileID: 1822036405}
   - {fileID: 1153932924}
   - {fileID: 563801243}
   - {fileID: 741592544}
   - {fileID: 170636327}
+  - {fileID: 626134152}
