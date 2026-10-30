@@ -205,9 +205,6 @@ public class PickupItem : MonoBehaviour
         // Parent the item to the player's hold point.
         transform.SetParent(holdPoint, false);
 
-        Debug.Log("After holdpoint: " + transform.lossyScale);
-        Debug.Log("Local scale: " + transform.localScale);
-
         // Position and rotate the item relative to the hold point.
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
@@ -234,19 +231,13 @@ public class PickupItem : MonoBehaviour
     public void Place(Vector3 position, Quaternion rotation)
     {
         isHeld = false;
-        Debug.Log("Before reparenting: " + transform.lossyScale);
 
         // Remove the item from the player's hold point.
         transform.SetParent(originalParent);
 
-        Debug.Log("After reparenting: " + transform.lossyScale);
-        Debug.Log("New local scale: " + transform.localScale);
 
         // Move the item to the calculated placement position.
         transform.SetPositionAndRotation(position, rotation);
-
-        Debug.Log("After positioning: " + transform.lossyScale);
-        Debug.Log("Local scale: " + transform.localScale);
 
         if (rb != null)
         {
