@@ -1,4 +1,5 @@
 
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -7,9 +8,14 @@ public class GameManager : MonoBehaviour
 {
     // This instance
     private GameObject managerObjInstance;
-    private GameManager instance;
+    private static GameManager instance;
+    public static GameManager Instance => instance;
 
-    [SerializeField] private string startingSceneName;
+    // Connect Title screen, menu and game
+    [SerializeField] private string titleSceneName;
+    [SerializeField] private string mainMenuSceneName;
+    [SerializeField] private string gameplaySceneName;
+
 
     private void Awake()
     {
@@ -25,6 +31,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Commented out this method because need to reuse Escape for calling menu within game
+    /*
     private void Update()
     {
         // Exit the game when Escape is pressed
@@ -34,13 +42,52 @@ public class GameManager : MonoBehaviour
             QuitGame();
         }
     }
+    */
+
+    public void OpenMainMenu()
+    {
+        LoadScene(mainMenuSceneName);
+    }
+
+    public void StartGame()
+    {
+        LoadScene(gameplaySceneName);
+    }
+
+    public void ReturnToTitle()
+    {
+        LoadScene(titleSceneName);
+    }
+
+    private void LoadScene(string sceneName)
+    {
+        if (string.IsNullOrWhiteSpace(sceneName))
+        {
+            Debug.LogWarning("Assign a destination scene in GameManager.", this);
+            return;
+        }
+        if (!Application.CanStreamedLevelBeLoaded(sceneName))
+        {
+            Debug.LogWarning($"Scene '{sceneName}' cannot be loaded.", this);
+            return;
+        }
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
 
     /// <summary>
     /// New game option from start menu
     /// </summary>
     public void NewGame()
     {
-        SceneManager.LoadScene(startingSceneName);
+        StartGame();
     }
 
     /// <summary>
