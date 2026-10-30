@@ -30,15 +30,6 @@ public class MosquitoSpawner : MonoBehaviour
         DestroySpawnIndicator();
     }
 
-    // temporary test hook
-    private void Update()
-    {
-        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
-        {
-            SpawnMosquito();
-        }
-    }
-
     public MosquitoAgent SpawnMosquito()
     {
         if (mosquitoManager == null)
@@ -163,4 +154,16 @@ public class MosquitoSpawner : MonoBehaviour
         Destroy(spawnAreaIndicator);
         spawnAreaIndicator = null;
     }
+
+    #if UNITY_EDITOR
+    // Temporary test hook (Editor only)
+    private void Update()
+    {
+        if (Keyboard.current != null &&
+            Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            SpawnMosquito();
+        }
+    }
+    #endif
 }
