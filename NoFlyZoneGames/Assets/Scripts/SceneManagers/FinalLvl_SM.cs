@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class FinalLvl_SM : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private MosquitoSpawner mosquitoSpawner;
+    [SerializeField] private List<MosquitoSpawner> mosquitoSpawners = new();
     [SerializeField] private MosquitoManager mosquitoManager;
 
     [Header("Wave Settings")]
@@ -89,16 +89,37 @@ public class FinalLvl_SM : MonoBehaviour
 
     private void SpawnRemainingMosquitoes()
     {
+        if (currentWave < 0 || currentWave >= numMosquitos.Count)
+        {
+            FinishLevel();
+            return;
+        }
+
         int required = Mathf.Max(0, numMosquitos[currentWave]);
+
+        if (mosquitoSpawners == null || mosquitoSpawners.Count == 0)
+        {
+            Debug.LogWarning("No mosquito spawners assigned.", this);
+            return;
+        }
 
         while (spawnedThisWave < required)
         {
-            MosquitoAgent mosquito = mosquitoSpawner.SpawnMosquito();
+            // Rotate through spawners instead of always starting at the first.
+            int spawnerIndex = spawnedThisWave % mosquitoSpawners.Count;
+            MosquitoSpawner spawner = mosquitoSpawners[spawnerIndex];
+
+            if (spawner == null)
+            {
+                spawnRetryTimer = spawnRetryInterval;
+                return;
+            }
+
+            MosquitoAgent mosquito = spawner.SpawnMosquito();
 
             if (mosquito == null)
             {
-                // Keep the wave in Spawning state until
-                // all required mosquitoes have spawned.
+                // Retry spawning later if this spawner cannot find a location.
                 spawnRetryTimer = spawnRetryInterval;
                 return;
             }

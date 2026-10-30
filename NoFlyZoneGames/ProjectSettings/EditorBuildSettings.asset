@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Official levels/FinalLevel.unity
     guid: 57aa1ae411676bb44925976e0d499920
+  - enabled: 1
+    path: Assets/Scenes/Official levels/Tutorial Level.unity
+    guid: 554edbebe95e0974d880fa86ac1775e4
   - enabled: 0
     path: Assets/Scenes/Testiing scenes/GameManagerUI/FlowTest_Title.unity
     guid: 5c6531116d09d70459a1c7b583e7eb46

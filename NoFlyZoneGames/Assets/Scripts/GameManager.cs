@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private string titleSceneName;
     [SerializeField] private string mainMenuSceneName;
     [SerializeField] private string gameplaySceneName;
+    [SerializeField] private string tutorialSceneName;
 
 
     private void Awake()
@@ -58,6 +59,11 @@ public class GameManager : MonoBehaviour
     {
         LoadScene(titleSceneName);
     }
+
+    public void StartTutorial()
+    {
+        LoadScene(tutorialSceneName);
+    }    
 
     private void LoadScene(string sceneName)
     {
