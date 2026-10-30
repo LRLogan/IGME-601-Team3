@@ -23,12 +23,12 @@ public class MosquitoSpawner : MonoBehaviour
         }
     }
 
-    public void SpawnMosquito()
+    public MosquitoAgent SpawnMosquito()
     {
         if (mosquitoManager == null)
         {
             Debug.LogWarning("Mosquito manager is not assigned.", this);
-            return;
+            return null;
         }
 
         for (int i = 0; i < maxSpawnAttempts; i++)
@@ -74,18 +74,19 @@ public class MosquitoSpawner : MonoBehaviour
             if (newAgent == null)
             {
                 Debug.LogWarning("Manager failed to spawn mosquito.", this);
-                return;
+                return null;
             }
 
             mosquitoManager.MoveOneTo(newAgent, mosquitoManager.pointB, targetStopDistance);
 
-            return;
+            return newAgent;
         }
 
         Debug.LogWarning(
             "Unable to find a valid mosquito spawn location.",
             this
         );
+        return null;
     }
 
     private void OnDrawGizmosSelected()
