@@ -50,7 +50,7 @@ public class PickupItem : MonoBehaviour
         {
             foreach (Collider col in GetComponentsInChildren<Collider>(true))
             {
-                if (col.isTrigger && (col is SphereCollider || col is BoxCollider || col is CapsuleCollider))
+                if (col.isTrigger && (col is SphereCollider || col is BoxCollider))
                 {
                     aoeCollider = col;
                     break;
