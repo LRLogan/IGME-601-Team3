@@ -6,6 +6,27 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/TitleScene.unity
+    guid: 53151c8e2e8d3ef46badaaabdbab62db
+  - enabled: 1
+    path: Assets/Scenes/MainMenuScene.unity
+    guid: e837a1ca4d87dff43b3fce480c437840
+  - enabled: 1
+    path: Assets/Scenes/Official levels/FinalLevel.unity
+    guid: 57aa1ae411676bb44925976e0d499920
+  - enabled: 1
+    path: Assets/Scenes/Official levels/Tutorial Level.unity
+    guid: 554edbebe95e0974d880fa86ac1775e4
+  - enabled: 0
+    path: Assets/Scenes/Testiing scenes/GameManagerUI/FlowTest_Title.unity
+    guid: 5c6531116d09d70459a1c7b583e7eb46
+  - enabled: 0
+    path: Assets/Scenes/Testiing scenes/GameManagerUI/FlowTest_Menu.unity
+    guid: fa1523fc4f3c1b145b3bb65e2bb2bc15
+  - enabled: 0
+    path: Assets/Scenes/Testiing scenes/GameManagerUI/FlowTest_Game.unity
+    guid: a27ae2c863d2aae4bb70ec3843e8bb14
+  - enabled: 0
     path: Assets/Scenes/Testiing scenes/GreyBoxLvl.unity
     guid: 21230336473110a44bd99ba993c9b448
   - enabled: 0

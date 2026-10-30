@@ -183,7 +183,7 @@ PrefabInstance:
     - target: {fileID: 6324999566732845486, guid: 052dd78b868770146ba89a7e2ec3832f, type: 3}
       propertyPath: mosquitoManager
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 483310240}
     - target: {fileID: 6324999566732845486, guid: 052dd78b868770146ba89a7e2ec3832f, type: 3}
       propertyPath: collisionLayers.m_Bits
       value: 0
@@ -530,7 +530,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MosquitoManager
   pointB: {fileID: 1379225190}
-  mosquitoPrefab: {fileID: 0}
+  mosquitoPrefab: {fileID: 1671038593}
   initialPoolSize: 10
 --- !u!4 &483310241
 Transform:
@@ -785,7 +785,7 @@ PrefabInstance:
     - target: {fileID: 6324999566732845486, guid: 052dd78b868770146ba89a7e2ec3832f, type: 3}
       propertyPath: mosquitoManager
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 483310240}
     - target: {fileID: 6324999566732845486, guid: 052dd78b868770146ba89a7e2ec3832f, type: 3}
       propertyPath: collisionLayers.m_Bits
       value: 0
@@ -1655,6 +1655,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+--- !u!1 &1671038593 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7023963726970427512, guid: 8b45a6b6bd03e9b4ead0bda54621b886, type: 3}
+  m_PrefabInstance: {fileID: 836012300}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1751390604
 GameObject:
   m_ObjectHideFlags: 0

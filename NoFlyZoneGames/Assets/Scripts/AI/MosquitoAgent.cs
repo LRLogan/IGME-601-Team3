@@ -22,6 +22,7 @@ public class MosquitoAgent : MonoBehaviour
     [SerializeField] private float mMass = 1f;
     [SerializeField] private float mMaxSpeed = 4f;
     [SerializeField] private float mMaxForce = 10f;
+    [SerializeField] private float mMinVerticalClamp = 0.5f;
 
     [Header("Movement Collision")]
     [SerializeField] private LayerMask obstacleLayers;
@@ -307,10 +308,16 @@ public class MosquitoAgent : MonoBehaviour
                 safeMovement += slideDirection * slideDistance;
             }
 
+            // Min vertical clamp check
+            if ((transform.position + safeMovement).y <= mMinVerticalClamp)
+                safeMovement.y = 0;
             transform.position += safeMovement;
         }
         else
         {
+            // Min vertical clamp check
+            if ((transform.position + displacement).y <= mMinVerticalClamp)
+                displacement.y = 0;
             transform.position += displacement;
         }
     }
@@ -550,7 +557,7 @@ public class MosquitoAgent : MonoBehaviour
                 continue;
 
             // Helps not complicate behavior on stationary objects can remove if needed
-            if (hit.collider.gameObject.layer == ~7) 
+            if (hit.collider.gameObject.layer == ~7)
                 continue;
 
             if (hit.distance < closestDistance)
@@ -717,8 +724,13 @@ public class MosquitoAgent : MonoBehaviour
     /// </summary>
     /// <param name="force">Force vector to apply.</param>
     /// <param name="mode">How the force should affect velocity.</param>
-    public void AddForce(Vector3 force, ForceMode mode)
+    public void AddForce(Vector3 force, ForceMode mode, bool lockY = false)
     {
+        if (lockY)
+        {
+            force.y = 0f;
+        }
+
         switch (mode)
         {
             case ForceMode.Force:

@@ -44,4 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48ec50977d4680f4bae7a1c05243821a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MosquitoSpawner
-  mosquitoPrefab: {fileID: 7023963726970427512, guid: 8b45a6b6bd03e9b4ead0bda54621b886, type: 3}
+  mosquitoManager: {fileID: 0}
+  spawnRadius: 5
+  collisionRadius: 0.5
+  collisionLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  maxSpawnAttempts: 15
+  targetStopDistance: 0.1
+  spawnAreaMaterial: {fileID: 2100000, guid: 1483fe9aeb86e9f4f9ee1dd279a9dbf0, type: 2}
+  showSpawnArea: 1

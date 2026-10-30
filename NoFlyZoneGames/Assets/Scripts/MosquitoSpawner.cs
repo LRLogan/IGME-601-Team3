@@ -14,6 +14,22 @@ public class MosquitoSpawner : MonoBehaviour
     [SerializeField] private int maxSpawnAttempts = 15;
     [SerializeField] private float targetStopDistance = 0.1f;
 
+    [Header("Spawn Area Visualization")]
+    [SerializeField] private Material spawnAreaMaterial;
+    [SerializeField] private bool showSpawnArea = true;
+
+    private GameObject spawnAreaIndicator;
+
+    private void Start()
+    {
+        CreateSpawnIndicator(spawnRadius);
+    }
+
+    private void OnDestroy()
+    {
+        DestroySpawnIndicator();
+    }
+
     // temporary test hook
     private void Update()
     {
@@ -23,12 +39,12 @@ public class MosquitoSpawner : MonoBehaviour
         }
     }
 
-    public void SpawnMosquito()
+    public MosquitoAgent SpawnMosquito()
     {
         if (mosquitoManager == null)
         {
             Debug.LogWarning("Mosquito manager is not assigned.", this);
-            return;
+            return null;
         }
 
         for (int i = 0; i < maxSpawnAttempts; i++)
@@ -74,23 +90,77 @@ public class MosquitoSpawner : MonoBehaviour
             if (newAgent == null)
             {
                 Debug.LogWarning("Manager failed to spawn mosquito.", this);
-                return;
+                return null;
             }
 
             mosquitoManager.MoveOneTo(newAgent, mosquitoManager.pointB, targetStopDistance);
 
-            return;
+            return newAgent;
         }
 
         Debug.LogWarning(
             "Unable to find a valid mosquito spawn location.",
             this
         );
+        return null;
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, spawnRadius);
+    }
+
+    private void CreateSpawnIndicator(float radius)
+    {
+        DestroySpawnIndicator();
+
+        if (spawnAreaMaterial == null)
+        {
+            Debug.LogWarning(
+                $"{name}: Assign a Spawn Area Material.",
+                this);
+            return;
+        }
+
+        spawnAreaIndicator = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        spawnAreaIndicator.name = "Spawn Area Indicator";
+
+        // Parent to the spawner so the indicator follows it.
+        spawnAreaIndicator.transform.SetParent(transform, false);
+        spawnAreaIndicator.transform.localPosition = Vector3.zero;
+        spawnAreaIndicator.transform.localRotation = Quaternion.identity;
+
+        // Remove the collider so it doesn't interfere with spawning.
+        Collider indicatorCollider =
+            spawnAreaIndicator.GetComponent<Collider>();
+
+        indicatorCollider.enabled = false;
+        Destroy(indicatorCollider);
+
+        // Unity's primitive sphere has a diameter of 1.
+        float diameter = radius * 2f;
+        spawnAreaIndicator.transform.localScale =
+            Vector3.one * diameter;
+
+        Renderer indicatorRenderer =
+            spawnAreaIndicator.GetComponent<Renderer>();
+
+        indicatorRenderer.sharedMaterial = spawnAreaMaterial;
+        indicatorRenderer.shadowCastingMode =
+            UnityEngine.Rendering.ShadowCastingMode.Off;
+        indicatorRenderer.receiveShadows = false;
+
+        spawnAreaIndicator.SetActive(showSpawnArea);
+    }
+
+    private void DestroySpawnIndicator()
+    {
+        if (spawnAreaIndicator == null)
+            return;
+
+        spawnAreaIndicator.SetActive(false);
+        Destroy(spawnAreaIndicator);
+        spawnAreaIndicator = null;
     }
 }
