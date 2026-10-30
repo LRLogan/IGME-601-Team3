@@ -10,6 +10,11 @@ public class PlayerHUDController : MonoBehaviour
     [SerializeField] private Sprite fullHeart;
     [SerializeField] private Sprite brokenHeart;
 
+    [Header("Countdown")]
+    [SerializeField] private GameObject countdownGroup;
+    [SerializeField] private TMP_Text countdownLabel;
+    [SerializeField] private TMP_Text countdownText;
+
     [Header("Interaction Prompt")]
     [SerializeField] private GameObject interactionPrompt;
     [SerializeField] private TMP_Text actionText;
@@ -39,6 +44,32 @@ public class PlayerHUDController : MonoBehaviour
         if (waveText == null) return;
 
         waveText.text = $"Wave {current}/{total}";
+    }
+
+    public void ShowCountdown(bool visible)
+    {
+        if (countdownGroup == null) return;
+
+        countdownGroup.SetActive(visible);
+    }
+
+    public void SetCountdown(float seconds)
+    {
+        if (countdownText == null) return;
+
+        int time = Mathf.CeilToInt(Mathf.Max(0f, seconds));
+
+        int minutes = time / 60;
+        int remainingSeconds = time % 60;
+
+        countdownText.text = $"{minutes:00}:{remainingSeconds:00}";
+    }
+    
+    public void SetCountdownLabel(string label)
+    {
+        if (countdownLabel == null) return;
+
+        countdownLabel.text = label;
     }
 
     // Update strike icons.

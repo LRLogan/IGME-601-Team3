@@ -16,8 +16,9 @@ public class FinalLvl_SM : MonoBehaviour
     [SerializeField] private float spawnRetryInterval = 1f;
 
     [Header("UI")]
-    [SerializeField] private TMP_Text waveText;
-    [SerializeField] private TMP_Text countdownText;
+    // [SerializeField] private TMP_Text waveText;
+    // [SerializeField] private TMP_Text countdownText;
+    [SerializeField] private PlayerHUDController playerHUD;
 
     private enum WaveState
     {
@@ -35,7 +36,8 @@ public class FinalLvl_SM : MonoBehaviour
 
     private void Start()
     {
-        countdownText.gameObject.SetActive(false);
+        // countdownText.gameObject.SetActive(false);
+        playerHUD.ShowCountdown(false);
 
         if (numMosquitos.Count == 0)
         {
@@ -77,8 +79,10 @@ public class FinalLvl_SM : MonoBehaviour
         spawnedThisWave = 0;
         spawnRetryTimer = 0f;
 
-        countdownText.gameObject.SetActive(false);
-        waveText.text = $"Wave {currentWave + 1}";
+        // countdownText.gameObject.SetActive(false);
+        // waveText.text = $"Wave {currentWave + 1}";
+        playerHUD.ShowCountdown(false);
+        playerHUD.SetWave(currentWave + 1, numMosquitos.Count);
 
         SpawnRemainingMosquitoes();
     }
@@ -125,8 +129,10 @@ public class FinalLvl_SM : MonoBehaviour
         currentState = WaveState.Countdown;
         countdown = timeBetweenWaves;
 
-        countdownText.gameObject.SetActive(true);
-        UpdateCountdownDisplay();
+        // countdownText.gameObject.SetActive(true);
+        playerHUD.SetCountdownLabel("NEXT WAVE IN");
+        playerHUD.SetCountdown(countdown);
+        playerHUD.ShowCountdown(true);
     }
 
     private void UpdateCountdown()
@@ -145,16 +151,18 @@ public class FinalLvl_SM : MonoBehaviour
 
     private void UpdateCountdownDisplay()
     {
-        countdownText.text =
-            $"Next Wave: {Mathf.CeilToInt(countdown)}";
+        // countdownText.text =
+        //     $"Next Wave: {Mathf.CeilToInt(countdown)}";
+        playerHUD.SetCountdown(countdown);
     }
 
     private void FinishLevel()
     {
         currentState = WaveState.Finished;
 
-        countdownText.gameObject.SetActive(false);
-        waveText.text = "All Waves Completed!";
+        // countdownText.gameObject.SetActive(false);
+        // waveText.text = "All Waves Completed!";
+        playerHUD.ShowCountdown(false);
     }
 
     // Connect this method to the Reset button's OnClick event.
