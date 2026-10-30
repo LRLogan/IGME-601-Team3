@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Commented out this method because need to reuse Escape for calling menu within game
+    /*
     private void Update()
     {
         // Exit the game when Escape is pressed
@@ -40,6 +42,7 @@ public class GameManager : MonoBehaviour
             QuitGame();
         }
     }
+    */
 
     public void OpenMainMenu()
     {

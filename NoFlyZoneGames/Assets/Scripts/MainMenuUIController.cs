@@ -14,6 +14,8 @@ public class MainMenuUIController : MonoBehaviour
 
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         BackToMainMenu();
         AudioListener.volume = volumeSlider.value;
     }
