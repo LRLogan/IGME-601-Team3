@@ -506,7 +506,14 @@ public class PlayerInteraction : MonoBehaviour
     /// <returns>The calculated world position for the held item.</returns>
     private Vector3 GetPlacementPosition(RaycastHit hit)
     {
-        return hit.point + Vector3.up * (GetBottomOffset() + placementPadding);
+        // return hit.point + Vector3.up * (GetBottomOffset() + placementPadding);
+        Bounds bounds = GetPlacedBoundsRelativeToPivot();
+
+        Vector3 offset = new Vector3(
+                        -bounds.center.x,
+                        -bounds.min.y + placementPadding,
+                        -bounds.center.z);
+        return hit.point + offset;
     }
 
     /// <summary>
