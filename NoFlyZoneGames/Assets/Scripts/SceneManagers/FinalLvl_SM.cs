@@ -12,6 +12,7 @@ public class FinalLvl_SM : MonoBehaviour
 
     [Header("Wave Settings")]
     [SerializeField] private List<int> numMosquitos = new();
+    [SerializeField] private float timeBeforeFirstWave = 10f;
     [SerializeField] private float timeBetweenWaves = 10f;
     [SerializeField] private float spawnRetryInterval = 1f;
 
@@ -29,6 +30,7 @@ public class FinalLvl_SM : MonoBehaviour
     }
 
     private WaveState currentState;
+    private bool isInitialCountdown;
     private int currentWave;
     private int spawnedThisWave;
     private float countdown;
@@ -45,7 +47,9 @@ public class FinalLvl_SM : MonoBehaviour
             return;
         }
 
-        StartWave();
+        // StartWave();
+        playerHUD.SetWave(1, numMosquitos.Count);
+        StartCountdown(true);
     }
 
     private void Update()
@@ -142,16 +146,24 @@ public class FinalLvl_SM : MonoBehaviour
             return;
         }
 
-        StartCountdown();
+        // StartCountdown();
+        StartCountdown(false);
     }
 
-    private void StartCountdown()
+    // private void StartCountdown()
+    private void StartCountdown(bool initial)
     {
         currentState = WaveState.Countdown;
-        countdown = timeBetweenWaves;
+        isInitialCountdown = initial;
+        //countdown = timeBetweenWaves;
+        countdown = initial
+        ? timeBeforeFirstWave
+        : timeBetweenWaves;
 
         // countdownText.gameObject.SetActive(true);
-        playerHUD.SetCountdownLabel("NEXT WAVE IN");
+        playerHUD.SetCountdownLabel(
+            initial ? "FIRST WAVE IN" : "NEXT WAVE IN"
+        );
         playerHUD.SetCountdown(countdown);
         playerHUD.ShowCountdown(true);
     }
@@ -163,9 +175,18 @@ public class FinalLvl_SM : MonoBehaviour
 
         UpdateCountdownDisplay();
 
+        // if (countdown <= 0f)
+        // {
+        //     currentWave++;
+        //     StartWave();
+        // }
         if (countdown <= 0f)
         {
-            currentWave++;
+            if (!isInitialCountdown)
+            {
+                currentWave++;
+            }
+
             StartWave();
         }
     }
@@ -183,6 +204,7 @@ public class FinalLvl_SM : MonoBehaviour
 
         // countdownText.gameObject.SetActive(false);
         // waveText.text = "All Waves Completed!";
+        playerHUD.ShowWaveComplete();
         playerHUD.ShowCountdown(false);
     }
 
