@@ -3774,6 +3774,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FirstPersonCharacter_Unpack
       objectReference: {fileID: 0}
+    - target: {fileID: 8340490921449256488, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: strength
+      value: 0.1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
