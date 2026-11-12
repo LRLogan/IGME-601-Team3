@@ -6,6 +6,7 @@ public class Window : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // <--- FIND WAY TO MAKE BUTTONS APPEAR ON MOSQUITO DEATH WITHOUT CRAZY COUPLING ---->
     }
 
     // Update is called once per frame

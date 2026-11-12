@@ -429,7 +429,6 @@ GameObject:
   - component: {fileID: 57538952}
   - component: {fileID: 57538951}
   - component: {fileID: 57538950}
-  - component: {fileID: 57538953}
   m_Layer: 5
   m_Name: TutorialStage1NextButton
   m_TagString: Untagged
@@ -501,9 +500,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 57538953}
-        m_TargetAssemblyTypeName: NextLvl, Assembly-CSharp
-        m_MethodName: OnPress
+      - m_Target: {fileID: 1124114955}
+        m_TargetAssemblyTypeName: Tutorial_SM, Assembly-CSharp
+        m_MethodName: ToPartTwo
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -551,20 +550,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 57538948}
   m_CullTransparentMesh: 1
---- !u!114 &57538953
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 57538948}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b8bbaa36af664b42a14559cf290d507, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  player: {fileID: 624823571}
-  spawn: {fileID: 778150150}
 --- !u!1 &67798807
 GameObject:
   m_ObjectHideFlags: 0
@@ -2641,7 +2626,6 @@ GameObject:
   - component: {fileID: 797034546}
   - component: {fileID: 797034545}
   - component: {fileID: 797034544}
-  - component: {fileID: 797034543}
   m_Layer: 5
   m_Name: TutorialCompletionButton
   m_TagString: Untagged
@@ -2649,20 +2633,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &797034543
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 797034542}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b8bbaa36af664b42a14559cf290d507, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  player: {fileID: 624823571}
-  spawn: {fileID: 1024335375}
 --- !u!114 &797034544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2707,13 +2677,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 1124114955}
+        m_TargetAssemblyTypeName: Tutorial_SM, Assembly-CSharp
+        m_MethodName: ToMainLevel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -3427,6 +3397,7 @@ GameObject:
   - component: {fileID: 1124114952}
   - component: {fileID: 1124114951}
   - component: {fileID: 1124114950}
+  - component: {fileID: 1124114955}
   m_Layer: 5
   m_Name: TutorialCanvas
   m_TagString: Untagged
@@ -3527,6 +3498,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1124114955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124114949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b8bbaa36af664b42a14559cf290d507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NextLvl
+  player: {fileID: 624823571}
+  spawn1: {fileID: 778150150}
+  spawn2: {fileID: 1024335375}
+  MainLevelSceneIndex: 2
 --- !u!1001 &1149065045
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3601,7 +3588,6 @@ GameObject:
   - component: {fileID: 1155646347}
   - component: {fileID: 1155646346}
   - component: {fileID: 1155646345}
-  - component: {fileID: 1155646344}
   m_Layer: 5
   m_Name: TutorialStage2NextButton
   m_TagString: Untagged
@@ -3629,20 +3615,6 @@ RectTransform:
   m_AnchoredPosition: {x: -350, y: 112}
   m_SizeDelta: {x: 500, y: 56}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1155646344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1155646342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b8bbaa36af664b42a14559cf290d507, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  player: {fileID: 624823571}
-  spawn: {fileID: 1024335375}
 --- !u!114 &1155646345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3687,9 +3659,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1155646344}
-        m_TargetAssemblyTypeName: NextLvl, Assembly-CSharp
-        m_MethodName: OnPress
+      - m_Target: {fileID: 1124114955}
+        m_TargetAssemblyTypeName: Tutorial_SM, Assembly-CSharp
+        m_MethodName: ToPartThree
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
