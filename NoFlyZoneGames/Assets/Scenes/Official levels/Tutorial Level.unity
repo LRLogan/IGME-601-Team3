@@ -3524,7 +3524,6 @@ MonoBehaviour:
   player: {fileID: 624823571}
   spawn1: {fileID: 778150150}
   spawn2: {fileID: 1024335375}
-  MainLevelSceneIndex: 2
   windows:
   - {fileID: 1710235310}
   - {fileID: 469998621}
@@ -3533,6 +3532,7 @@ MonoBehaviour:
   - {fileID: 57538948}
   - {fileID: 1155646342}
   - {fileID: 797034542}
+  MainLevelSceneIndex: 2
 --- !u!1001 &1149065045
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6129,6 +6129,10 @@ PrefabInstance:
     - target: {fileID: 8340490921449256488, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: canPush
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8340490921449256488, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: strength
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 8340490921449256488, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: pushLayers.m_Bits
