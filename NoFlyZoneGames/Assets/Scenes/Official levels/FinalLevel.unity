@@ -1191,7 +1191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5145d7055864c3a40a6b9435578cf846, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MosquitoManager
-  pointB: {fileID: 341443282}
+  pointB: {fileID: 1840358239}
   mosquitoPrefab: {fileID: 7023963726970427512, guid: 8b45a6b6bd03e9b4ead0bda54621b886, type: 3}
   initialPoolSize: 10
 --- !u!4 &308368005
@@ -1271,7 +1271,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 3174988409143821362, guid: a80ea3fd1d36aef4e87b1c5aff69a778, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1840358239}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a80ea3fd1d36aef4e87b1c5aff69a778, type: 3}
 --- !u!4 &341443282 stripped
@@ -2680,6 +2683,18 @@ PrefabInstance:
       value: Eletric Fan Animation
       objectReference: {fileID: 0}
     - target: {fileID: 3053871317199933244, guid: 82739db5cc6f1064a8f3203057075818, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.8481061
+      objectReference: {fileID: 0}
+    - target: {fileID: 3053871317199933244, guid: 82739db5cc6f1064a8f3203057075818, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.3102144
+      objectReference: {fileID: 0}
+    - target: {fileID: 3053871317199933244, guid: 82739db5cc6f1064a8f3203057075818, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.8481061
+      objectReference: {fileID: 0}
+    - target: {fileID: 3053871317199933244, guid: 82739db5cc6f1064a8f3203057075818, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.448496
       objectReference: {fileID: 0}
@@ -2718,6 +2733,18 @@ PrefabInstance:
     - target: {fileID: 3053871317199933244, guid: 82739db5cc6f1064a8f3203057075818, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822530153054592203, guid: 82739db5cc6f1064a8f3203057075818, type: 3}
+      propertyPath: m_Size.y
+      value: 0.49194825
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822530153054592203, guid: 82739db5cc6f1064a8f3203057075818, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7822530153054592203, guid: 82739db5cc6f1064a8f3203057075818, type: 3}
+      propertyPath: m_Center.y
+      value: 0.6310691
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3634,6 +3661,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1840358238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1840358239}
+  m_Layer: 0
+  m_Name: TargetPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1840358239
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1840358238}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.121, y: 0.283, z: 0.066}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 341443282}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1884798309
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3856,6 +3914,18 @@ PrefabInstance:
     - target: {fileID: 7112043623862613069, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
       propertyPath: m_Name
       value: FirstPersonCharacter_Unpack
+      objectReference: {fileID: 0}
+    - target: {fileID: 8362280600851309633, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.3152
+      objectReference: {fileID: 0}
+    - target: {fileID: 8362280600851309633, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.162
+      objectReference: {fileID: 0}
+    - target: {fileID: 8362280600851309633, guid: 6b7d8d987b362e74995bbf8b797d9eb9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -2.8067598
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
