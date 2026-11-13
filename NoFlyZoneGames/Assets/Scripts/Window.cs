@@ -1,12 +1,14 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Window : MonoBehaviour
 {
+    public event Action OnMosquitoPassed;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // <--- FIND WAY TO MAKE BUTTONS APPEAR ON MOSQUITO DEATH WITHOUT CRAZY COUPLING ---->
     }
 
     // Update is called once per frame
@@ -21,6 +23,10 @@ public class Window : MonoBehaviour
         if(collisionObj.CompareTag("Mosquito"))
         {
             Debug.Log("Huzzah");
+
+            // Notify any subscribers
+            OnMosquitoPassed?.Invoke();
+
             //Deletes the mosquito on contact 
             Destroy(collisionObj);
         }
