@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 2243496522664788149}
   - component: {fileID: 570981155073154620}
   m_Layer: 0
-  m_Name: UVLight
+  m_Name: obsoleteUV
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
