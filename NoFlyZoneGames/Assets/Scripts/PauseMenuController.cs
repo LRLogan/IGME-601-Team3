@@ -68,7 +68,6 @@ public class PauseMenuController : MonoBehaviour
         controllerWasEnabled = playerController.enabled;
         interactionWasEnabled = playerInteraction.enabled;
 
-        currentMenuState = MenuState.Paused;
         Time.timeScale = 0f;
 
         playerController.enabled = false;
@@ -83,7 +82,7 @@ public class PauseMenuController : MonoBehaviour
 
     private void PauseGame()
     {
-        if (currentMenuState == MenuState.Paused || currentMenuState == MenuState.GameOver)
+        if (currentMenuState != MenuState.Closed)
             return;
 
         currentMenuState = MenuState.Paused;
