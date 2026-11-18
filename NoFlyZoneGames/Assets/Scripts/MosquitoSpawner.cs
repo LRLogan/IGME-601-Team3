@@ -27,8 +27,8 @@ public class MosquitoSpawner : MonoBehaviour
         CreateSpawnIndicator(spawnRadius);
 
         LineRenderer rend = this.AddComponent<LineRenderer>();
-        guideLine = new GuideLine(this.transform.position, mosquitoManager.pointB.transform.position, Color.aliceBlue, rend);
-        guideLine.EnableGuideLine(guideLine);
+        guideLine = new GuideLine(this.transform.position, mosquitoManager.pointB.transform.position, Color.lightBlue, rend);
+        GuideLine.EnableGuideLine(guideLine);
     }
 
     private void OnDestroy()
