@@ -8,6 +8,7 @@ public class TargetHealth : MonoBehaviour
     [SerializeField] private int damagePerHit = 10;
     [SerializeField] private MosquitoManager mManager;
     [SerializeField] private Slider healthSlider;
+    [SerializeField] private FinalLvl_SM sceneManager;
     private HashSet<MosquitoAgent> arrivedMosquito = new HashSet<MosquitoAgent>();
 
     private int currentHealth;
@@ -53,6 +54,13 @@ public class TargetHealth : MonoBehaviour
         currentHealth = Mathf.Clamp(currentHealth - damagePerHit, 0, maxHealth);
         UpdateHealthBar();
         Debug.Log($"Mosquito hit the target. Health: {currentHealth}", this);
+
+        if (currentHealth <= 0)
+        {
+            Debug.Log("Target destroyed!", this);
+            if (sceneManager != null)
+                sceneManager.FailLevel();
+        }
     }
 
     private void UpdateHealthBar()
