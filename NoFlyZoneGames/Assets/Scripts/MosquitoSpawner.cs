@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
@@ -19,10 +20,15 @@ public class MosquitoSpawner : MonoBehaviour
     [SerializeField] private bool showSpawnArea = true;
 
     private GameObject spawnAreaIndicator;
+    private GuideLine guideLine;
 
     private void Start()
     {
         CreateSpawnIndicator(spawnRadius);
+
+        LineRenderer rend = this.AddComponent<LineRenderer>();
+        guideLine = new GuideLine(this.transform.position, mosquitoManager.pointB.transform.position, Color.aliceBlue, rend);
+        guideLine.EnableGuideLine(guideLine);
     }
 
     private void OnDestroy()

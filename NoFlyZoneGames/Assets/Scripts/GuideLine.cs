@@ -8,22 +8,24 @@ public sealed class GuideLine
 {
     public Vector3 start, end;
     public Color color;
-    public float width = 0.2f;
+    public float width = 0.1f;
     public LineRenderer renderer;
 
-    public GuideLine(Vector3 start, Vector3 end, Color color, float width   )
+    public GuideLine(Vector3 start, Vector3 end, Color color, float width, LineRenderer rend)
     {
         this.start = start;
         this.end = end;
         this.color = color;
         this.width = width;
+        renderer = rend;
     }
 
-    public GuideLine(Vector3 start, Vector3 end, Color color)
+    public GuideLine(Vector3 start, Vector3 end, Color color, LineRenderer rend)
     {
         this.start = start;
         this.end = end;
         this.color = color;
+        renderer = rend;
     }
 
     /// <summary>
@@ -32,16 +34,11 @@ public sealed class GuideLine
     /// <param name="line"></param>
     public void EnableGuideLine(GuideLine line)
     {
-        LineRenderer newLine = new LineRenderer();
-
-        newLine.positionCount = 2;
-        newLine.startWidth = width;
-        newLine.endWidth = width;
-
-        newLine.SetPosition(0, line.start);
-        newLine.SetPosition(1, line.end);
-
-        line.renderer = newLine;
+        line.renderer.positionCount = 2;
+        line.renderer.startWidth = line.width;
+        line.renderer.endWidth = line.width;
+        line.renderer.SetPosition(0, line.start);
+        line.renderer.SetPosition(1, line.end);
     }
 
     /// <summary>
