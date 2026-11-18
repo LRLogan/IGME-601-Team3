@@ -15,9 +15,6 @@ public class PlayerHUDController : MonoBehaviour
     [SerializeField] private TMP_Text countdownLabel;
     [SerializeField] private TMP_Text countdownText;
 
-    [Header("Wave Complete")]
-    [SerializeField] private GameObject waveCompleteMessage;
-
     [Header("Interaction Prompt")]
     [SerializeField] private GameObject interactionPrompt;
     [SerializeField] private TMP_Text actionText;
@@ -90,13 +87,6 @@ public class PlayerHUDController : MonoBehaviour
                     i < remaining ? fullHeart : brokenHeart;
             }
         }
-    }
-
-    public void ShowWaveComplete()
-    {
-        if (waveCompleteMessage == null) return;
-
-        waveCompleteMessage.SetActive(true);
     }
 
     private void UpdateInteractionPrompt()

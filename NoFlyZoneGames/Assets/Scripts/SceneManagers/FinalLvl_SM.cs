@@ -20,13 +20,15 @@ public class FinalLvl_SM : MonoBehaviour
     // [SerializeField] private TMP_Text waveText;
     // [SerializeField] private TMP_Text countdownText;
     [SerializeField] private PlayerHUDController playerHUD;
+    [SerializeField] private PauseMenuController pauseCanvas;
 
     private enum WaveState
     {
         Spawning,
         Active,
         Countdown,
-        Finished
+        Finished,
+        Failed
     }
 
     private WaveState currentState;
@@ -73,6 +75,9 @@ public class FinalLvl_SM : MonoBehaviour
                 break;
 
             case WaveState.Finished:
+                break;
+
+            case WaveState.Failed:
                 break;
         }
     }
@@ -200,12 +205,27 @@ public class FinalLvl_SM : MonoBehaviour
 
     private void FinishLevel()
     {
+        if (currentState == WaveState.Failed ||
+            currentState == WaveState.Finished)
+            return;
+
         currentState = WaveState.Finished;
 
         // countdownText.gameObject.SetActive(false);
         // waveText.text = "All Waves Completed!";
-        playerHUD.ShowWaveComplete();
-        playerHUD.ShowCountdown(false);
+        // playerHUD.ShowCountdown(false);
+        pauseCanvas.ShowWaveComplete();
+    }
+
+    public void FailLevel()
+    {
+        if (currentState == WaveState.Failed ||
+            currentState == WaveState.Finished)
+            return;
+
+        currentState = WaveState.Failed;
+        
+        pauseCanvas.ShowGameOver();
     }
 
     // Connect this method to the Reset button's OnClick event.
