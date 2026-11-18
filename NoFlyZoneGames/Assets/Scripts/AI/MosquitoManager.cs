@@ -4,6 +4,7 @@ using UnityEngine;
 /// <summary>
 /// I may get rid of this class in the future in favor for a more data driven approach 
 /// but this one is easier to set up
+/// Used to handle all mosquitos
 /// </summary>
 
 public class MosquitoManager : MonoBehaviour
@@ -19,13 +20,6 @@ public class MosquitoManager : MonoBehaviour
 
     private void Start()
     {
-        /*
-        activeMosquitoes.AddRange(
-            FindObjectsByType<MosquitoAgent>(
-                FindObjectsSortMode.None));
-
-        MoveAllTo(pointB.position);
-        */
         InstantiateMosquitos();
     }
 
