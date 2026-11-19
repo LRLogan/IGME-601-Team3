@@ -105,6 +105,16 @@ public class MosquitoAgent : MonoBehaviour
     {
         if (mExternallyControlled) return;
 
+        // Discard expired or cancelled destination so the previous route can resume
+        while (!mFleeing && mTargetStack.Count > 0)
+        {
+            MovementTarget target = mTargetStack.Peek();
+            if (!target.Cancelled && Time.time < target.ExpiresAt)
+                break;
+
+            CompleteCurrentTarget();
+        }
+
         switch (CurrentTask)
         {
             case Task.Idle:
@@ -189,9 +199,19 @@ public class MosquitoAgent : MonoBehaviour
 
             mTarget = CurrentTarget;
 
+            // Change the arrival code so that a temporary destination stays on the stack until it expires
             if (Vector3.Distance(transform.position, mTarget) <= CurrentStopDistance)
             {
-                CompleteCurrentTarget();
+                if (float.IsPositiveInfinity(mTargetStack.Peek().ExpiresAt))
+                {
+                    CompleteCurrentTarget();
+                }
+                else
+                {
+                    mVelocity = Vector3.zero;
+                    mJitterVelocity = Vector3.zero;
+                }
+
                 return;
             }
 
@@ -674,6 +694,22 @@ public class MosquitoAgent : MonoBehaviour
         MoveTo(target, arriveDistance);
     }
 
+    // Push a temporary destination and return a callback that cancels only this request
+    public System.Action MoveToTemporarily(
+    Vector3 position, float stopDistance, float duration)
+    {
+        var target = new MovementTarget(position, Mathf.Max(0.05f, stopDistance))
+        {
+            ExpiresAt = Time.time + duration
+        };
+
+        mTargetStack.Push(target);
+        mFleeing = false;
+        CurrentTask = Task.Pathfinding;
+
+        return () => target.Cancelled = true;
+    }
+
     /// <summary>
     /// Simple move to behavior 
     /// </summary>
@@ -794,6 +830,9 @@ public class MosquitoAgent : MonoBehaviour
         // Preserve each destination's stop distance in the stack when an interrupted destination resumes
         public Vector3 Position { get; }
         public float StopDistance { get; }
+
+        public float ExpiresAt = float.PositiveInfinity;
+        public bool Cancelled;
 
         public MovementTarget(Vector3 position, float stopDistance)
         {
