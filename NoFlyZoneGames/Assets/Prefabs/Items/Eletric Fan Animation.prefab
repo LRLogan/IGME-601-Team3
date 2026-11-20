@@ -53,7 +53,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 144b0af3131d6cf40b05d323da6e49e0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.71
+      value: 3.02
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 144b0af3131d6cf40b05d323da6e49e0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -61,19 +61,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 144b0af3131d6cf40b05d323da6e49e0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.23
+      value: 1.44
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 144b0af3131d6cf40b05d323da6e49e0, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 144b0af3131d6cf40b05d323da6e49e0, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 144b0af3131d6cf40b05d323da6e49e0, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 144b0af3131d6cf40b05d323da6e49e0, type: 3}
       propertyPath: m_LocalRotation.z
@@ -85,7 +85,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 144b0af3131d6cf40b05d323da6e49e0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 270
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 144b0af3131d6cf40b05d323da6e49e0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -201,8 +201,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.5180662, y: 0.4129546, z: 1.2195622}
-  m_Center: {x: -0.015209068, y: 0.67056555, z: 0.6988653}
+  m_Size: {x: 0.5180662, y: 0.4129546, z: 2.2104266}
+  m_Center: {x: -0.015209069, y: 0.67056555, z: 1.194294}
 --- !u!4 &3053871317199933244 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 144b0af3131d6cf40b05d323da6e49e0, type: 3}
