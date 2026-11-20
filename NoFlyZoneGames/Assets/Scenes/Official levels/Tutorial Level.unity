@@ -801,7 +801,7 @@ GameObject:
   - component: {fileID: 222656918}
   - component: {fileID: 222656917}
   - component: {fileID: 222656916}
-  m_Layer: 6
+  m_Layer: 9
   m_Name: Floor (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -817,7 +817,7 @@ Transform:
   m_GameObject: {fileID: 222656914}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.439129, y: 0.001, z: -0.44491}
+  m_LocalPosition: {x: 5.439129, y: 0.01, z: -0.44491}
   m_LocalScale: {x: 2.74792, y: 2, z: 1.95316}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -914,7 +914,7 @@ GameObject:
   - component: {fileID: 350170331}
   - component: {fileID: 350170330}
   - component: {fileID: 350170329}
-  m_Layer: 9
+  m_Layer: 6
   m_Name: Floor (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1009,7 +1009,7 @@ Transform:
   m_GameObject: {fileID: 350170328}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.19999695, y: -4.01, z: -0.9489994}
+  m_LocalPosition: {x: -0.19999695, y: -4.02, z: -0.9489994}
   m_LocalScale: {x: 1.7353201, y: 3, z: 1.86633}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2375,7 +2375,7 @@ PrefabInstance:
     - target: {fileID: 8323685216168356349, guid: 9362e8953fc15044b8880492e5787c85, type: 3}
       propertyPath: waveCompleteMessage
       value: 
-      objectReference: {fileID: 759478370}
+      objectReference: {fileID: 0}
     - target: {fileID: 9092582204545884260, guid: 9362e8953fc15044b8880492e5787c85, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -2388,11 +2388,6 @@ PrefabInstance:
 --- !u!224 &759478369 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7082548025577005047, guid: 9362e8953fc15044b8880492e5787c85, type: 3}
-  m_PrefabInstance: {fileID: 759478368}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &759478370 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9092582204545884260, guid: 9362e8953fc15044b8880492e5787c85, type: 3}
   m_PrefabInstance: {fileID: 759478368}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &766015269
@@ -2992,7 +2987,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3053871317199933244, guid: 82739db5cc6f1064a8f3203057075818, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -4.0099998
+      value: -4.01
       objectReference: {fileID: 0}
     - target: {fileID: 3053871317199933244, guid: 82739db5cc6f1064a8f3203057075818, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3740,7 +3735,7 @@ GameObject:
   - component: {fileID: 1160188944}
   - component: {fileID: 1160188943}
   - component: {fileID: 1160188942}
-  m_Layer: 6
+  m_Layer: 9
   m_Name: Floor (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4039,7 +4034,7 @@ GameObject:
   - component: {fileID: 1250950662}
   - component: {fileID: 1250950661}
   - component: {fileID: 1250950660}
-  m_Layer: 9
+  m_Layer: 6
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4902,7 +4897,7 @@ GameObject:
   - component: {fileID: 1541491368}
   - component: {fileID: 1541491367}
   - component: {fileID: 1541491366}
-  m_Layer: 6
+  m_Layer: 9
   m_Name: Floor (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4918,7 +4913,7 @@ Transform:
   m_GameObject: {fileID: 1541491364}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.19999695, y: -4.011, z: -0.9489994}
+  m_LocalPosition: {x: -0.19999695, y: -4.01, z: -0.9489994}
   m_LocalScale: {x: 1.7353201, y: 3, z: 1.86633}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5293,6 +5288,10 @@ MonoBehaviour:
   playerController: {fileID: 624823576}
   playerInteraction: {fileID: 624823573}
   playerInputs: {fileID: 624823574}
+  pauseLabel: {fileID: 0}
+  waveCompleteLabel: {fileID: 0}
+  gameOverLabel: {fileID: 0}
+  resumeButton: {fileID: 0}
   hudCanvas: {fileID: 522873746}
 --- !u!114 &1722060732
 MonoBehaviour:
@@ -5740,7 +5739,7 @@ GameObject:
   - component: {fileID: 1819747414}
   - component: {fileID: 1819747413}
   - component: {fileID: 1819747412}
-  m_Layer: 9
+  m_Layer: 6
   m_Name: Floor (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
