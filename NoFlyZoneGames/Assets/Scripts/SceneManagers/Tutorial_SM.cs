@@ -6,12 +6,9 @@ public class Tutorial_SM : MonoBehaviour
     [SerializeField]
     GameObject player;
 
-    [SerializeField]
-    GameObject spawn1;
-
-    [SerializeField]
-    GameObject spawn2;
-
+    [SerializeField] 
+    private Transform[] stageSpawnPoints;
+    
     [SerializeField]
     Window[] windows;
 
@@ -61,33 +58,20 @@ public class Tutorial_SM : MonoBehaviour
         // Unlock cursor
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+    }
 
-        // Move to the next button
+    public void NextStage(int index)
+    {
+        player.GetComponent<CharacterController>().enabled = false;
+        player.transform.position = stageSpawnPoints[index].position;
+        player.GetComponent<CharacterController>().enabled = true;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        tutorialButtons[currentButtonIndex].SetActive(false);
+
         currentButtonIndex++;
-    }
-
-    public void ToPartTwo()
-    {
-        player.GetComponent<CharacterController>().enabled = false;
-        player.transform.position = spawn1.transform.position;
-        player.GetComponent<CharacterController>().enabled = true;
-        //Lock and Hide Cursor
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        tutorialButtons[currentButtonIndex].SetActive(false);
-
-    }
-
-    public void ToPartThree()
-    {
-        player.GetComponent<CharacterController>().enabled = false;
-        player.transform.position = spawn2.transform.position;
-        player.GetComponent<CharacterController>().enabled = true;
-        //Lock and Hide Cursor
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        tutorialButtons[currentButtonIndex].SetActive(false);
-
     }
 
     public void ToMainLevel()
