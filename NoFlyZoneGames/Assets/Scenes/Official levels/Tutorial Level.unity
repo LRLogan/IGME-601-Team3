@@ -2420,6 +2420,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MosquitoSpawner
       objectReference: {fileID: 0}
+    - target: {fileID: 6324999566732845486, guid: 052dd78b868770146ba89a7e2ec3832f, type: 3}
+      propertyPath: mosquitoManager
+      value: 
+      objectReference: {fileID: 1233165543}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5401,6 +5405,58 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3245894064453760122, guid: c461a21271ad8374ebfa5b8488c364d2, type: 3}
   m_PrefabInstance: {fileID: 1210903287}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1227684720 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8895045615375297209, guid: a80ea3fd1d36aef4e87b1c5aff69a778, type: 3}
+  m_PrefabInstance: {fileID: 2060867244}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1233165542
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1233165544}
+  - component: {fileID: 1233165543}
+  m_Layer: 0
+  m_Name: MosquitoManagerRoom2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1233165543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1233165542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5145d7055864c3a40a6b9435578cf846, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MosquitoManager
+  pointB: {fileID: 1227684720}
+  mosquitoPrefab: {fileID: 7023963726970427512, guid: 8b45a6b6bd03e9b4ead0bda54621b886, type: 3}
+  initialPoolSize: 10
+--- !u!4 &1233165544
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1233165542}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 182.94, y: 4.01, z: -13.75}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1250950659
 GameObject:
   m_ObjectHideFlags: 0
@@ -8462,6 +8518,7 @@ SceneRoots:
   - {fileID: 1964206554}
   - {fileID: 1555405360}
   - {fileID: 67798808}
+  - {fileID: 1233165544}
   - {fileID: 582006235}
   - {fileID: 567411260}
   - {fileID: 1933952816}
