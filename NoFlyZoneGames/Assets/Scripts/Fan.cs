@@ -6,8 +6,6 @@ public class Fan : MonoBehaviour, IItemEffect
     private bool effectActive = true;
     private string itemName;
     [SerializeField]
-    private float radius;
-    [SerializeField]
     private float strength;
 
     Transform pushPoint;
