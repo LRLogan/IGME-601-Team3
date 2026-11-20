@@ -19,7 +19,8 @@ public class Tutorial_SM : MonoBehaviour
     int MainLevelSceneIndex = 2;
 
     [Header("Mosquito Spawner for UV and Zapper Tutorial")]
-    [SerializeField] private MosquitoSpawner practiceSpawner;
+    [SerializeField] private MosquitoSpawner[] spawners; 
+    private MosquitoSpawner activeSpawner;
     [Header("UV and Zapper Tutorial Index")]
     [SerializeField] private int practiceStageIndex = 3;
 
@@ -36,13 +37,12 @@ public class Tutorial_SM : MonoBehaviour
         {
             button.SetActive(false);
         }
+
+        activeSpawner = spawners[currentStageIndex];
     }
 
     private void Update()
     {
-        if (currentStageIndex != practiceStageIndex)
-            return;
-
         if (practiceMosquito != null &&
             practiceMosquito.gameObject.activeSelf)
             return;
@@ -51,7 +51,7 @@ public class Tutorial_SM : MonoBehaviour
             return;
 
         nextSpawnAttemptTime = Time.time + 0.5f;
-        practiceMosquito = practiceSpawner.SpawnMosquito();
+        practiceMosquito = activeSpawner.SpawnMosquito();
 
         // for testing purposes, set the mosquito to idle so it doesn't fly away
         // practiceMosquito.SetTask(MosquitoAgent.Task.Idle);
@@ -99,6 +99,7 @@ public class Tutorial_SM : MonoBehaviour
         tutorialButtons[currentStageIndex].SetActive(false);
 
         currentStageIndex++;
+        activeSpawner = spawners[currentStageIndex];
     }
 
     public void ToMainLevel()
