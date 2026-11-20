@@ -69,7 +69,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1af1e698d4d6ef4db56589802cedbb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MosquitoAgent
-  moveSpeed: 3
+  moveSpeed: 2
   arriveDistance: 0.5
   fleeDistance: 5
   mMass: 1
