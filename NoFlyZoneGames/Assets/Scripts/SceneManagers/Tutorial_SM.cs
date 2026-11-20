@@ -6,8 +6,8 @@ public class Tutorial_SM : MonoBehaviour
     [SerializeField]
     GameObject player;
 
-    [SerializeField] 
-    private Transform[] stageSpawnPoints;
+    [Header("Spawns")]
+    [SerializeField] private Transform[] stageSpawnPoints;
     
     [SerializeField]
     Window[] windows;
@@ -18,8 +18,16 @@ public class Tutorial_SM : MonoBehaviour
     [SerializeField]
     int MainLevelSceneIndex = 2;
 
+    [Header("Mosquito Spawner for UV and Zapper Tutorial")]
+    [SerializeField] private MosquitoSpawner practiceSpawner;
+    [Header("UV and Zapper Tutorial Index")]
+    [SerializeField] private int practiceStageIndex = 3;
+
+    private MosquitoAgent practiceMosquito;
+    private float nextSpawnAttemptTime;
+
     // Keeps track of the next button to activate
-    private int currentButtonIndex = 0;
+    private int currentStageIndex = 0;
 
     void Awake()
     {
@@ -30,6 +38,22 @@ public class Tutorial_SM : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (currentStageIndex != practiceStageIndex)
+            return;
+
+        if (practiceMosquito != null &&
+            practiceMosquito.gameObject.activeSelf)
+            return;
+
+        if (Time.time < nextSpawnAttemptTime)
+            return;
+
+        nextSpawnAttemptTime = Time.time + 0.5f;
+        practiceMosquito = practiceSpawner.SpawnMosquito();
+    }
+    
     private void OnEnable()
     {
         foreach (Window window in windows)
@@ -49,11 +73,11 @@ public class Tutorial_SM : MonoBehaviour
     private void ShowNextButton()
     {
         // Make sure there are still buttons to show
-        if (currentButtonIndex >= tutorialButtons.Length)
+        if (currentStageIndex >= tutorialButtons.Length)
             return;
 
         // Activate the next button
-        tutorialButtons[currentButtonIndex].SetActive(true);
+        tutorialButtons[currentStageIndex].SetActive(true);
 
         // Unlock cursor
         Cursor.lockState = CursorLockMode.None;
@@ -69,9 +93,9 @@ public class Tutorial_SM : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        tutorialButtons[currentButtonIndex].SetActive(false);
+        tutorialButtons[currentStageIndex].SetActive(false);
 
-        currentButtonIndex++;
+        currentStageIndex++;
     }
 
     public void ToMainLevel()

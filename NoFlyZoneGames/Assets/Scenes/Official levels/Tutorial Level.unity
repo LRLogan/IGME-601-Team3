@@ -3740,6 +3740,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1079972893152665983, guid: 052dd78b868770146ba89a7e2ec3832f, type: 3}
   m_PrefabInstance: {fileID: 901063180}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &901063182 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6324999566732845486, guid: 052dd78b868770146ba89a7e2ec3832f, type: 3}
+  m_PrefabInstance: {fileID: 901063180}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48ec50977d4680f4bae7a1c05243821a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MosquitoSpawner
 --- !u!1 &918307710
 GameObject:
   m_ObjectHideFlags: 0
@@ -4071,6 +4082,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4002062449679107633, guid: a80ea3fd1d36aef4e87b1c5aff69a778, type: 3}
+      propertyPath: mManager
+      value: 
+      objectReference: {fileID: 1108188402}
+    - target: {fileID: 4002062449679107633, guid: a80ea3fd1d36aef4e87b1c5aff69a778, type: 3}
       propertyPath: damagePerHit
       value: 0
       objectReference: {fileID: 0}
@@ -4398,7 +4413,7 @@ GameObject:
   - component: {fileID: 1108188401}
   - component: {fileID: 1108188402}
   m_Layer: 0
-  m_Name: MosquitoManager
+  m_Name: MosquitoManagerRoom4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4636,12 +4651,15 @@ MonoBehaviour:
   - {fileID: 1710235310}
   - {fileID: 469998621}
   - {fileID: 1991764091}
+  - {fileID: 2092173771}
   tutorialButtons:
   - {fileID: 57538948}
   - {fileID: 1155646342}
   - {fileID: 703135883}
   - {fileID: 797034542}
   MainLevelSceneIndex: 2
+  practiceSpawner: {fileID: 901063182}
+  practiceStageIndex: 3
 --- !u!1001 &1149065045
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7902,6 +7920,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 320220007060838547, guid: fc91c124506b46245aeec4560fa0f371, type: 3}
   m_PrefabInstance: {fileID: 2092173769}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2092173771 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4738090767205241665, guid: fc91c124506b46245aeec4560fa0f371, type: 3}
+  m_PrefabInstance: {fileID: 2092173769}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d2c61241982aa4cb78bb9cf100a0c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Window
 --- !u!1 &2104148812
 GameObject:
   m_ObjectHideFlags: 0
