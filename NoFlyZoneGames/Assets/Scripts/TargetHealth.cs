@@ -17,6 +17,7 @@ public class TargetHealth : MonoBehaviour
     {
         // Set the target to full health at the beginning of the game
         currentHealth = maxHealth;
+
         if (healthSlider != null)
         {
             healthSlider.minValue = 0;

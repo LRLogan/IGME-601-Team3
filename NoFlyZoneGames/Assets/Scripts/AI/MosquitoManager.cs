@@ -99,6 +99,11 @@ public class MosquitoManager : MonoBehaviour
             }
         }
 
+        MosquitoHealth health = mosquito.GetComponent<MosquitoHealth>();
+
+        if (health != null)
+            health.SetManager(this);
+
         activeMosquitoes.Add(mosquito);
 
         return mosquito;
