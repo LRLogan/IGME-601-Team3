@@ -5,6 +5,7 @@ public class MosquitoHealth : MonoBehaviour
 {
     [SerializeField]
     private float health = 100f;
+    private float initialHealth;
 
     private MosquitoManager mosquitoManager;
 
@@ -14,6 +15,16 @@ public class MosquitoHealth : MonoBehaviour
     {
         if (mosquitoManager == null) 
             mosquitoManager = FindFirstObjectByType<MosquitoManager>();
+    }
+
+    private void Awake()
+    {
+        initialHealth = health;
+    }
+
+    private void OnEnable()
+    {
+        health = initialHealth;
     }
 
     public void SetManager(MosquitoManager manager)

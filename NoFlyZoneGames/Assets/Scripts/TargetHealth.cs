@@ -11,13 +11,10 @@ public class TargetHealth : MonoBehaviour
     [SerializeField] private FinalLvl_SM sceneManager;
     private HashSet<MosquitoAgent> arrivedMosquito = new HashSet<MosquitoAgent>();
 
-    private int initialHealth;
     private int currentHealth;
 
     void Awake()
     {
-        initialHealth = maxHealth;
-
         // Set the target to full health at the beginning of the game
         currentHealth = maxHealth;
 
@@ -28,11 +25,6 @@ public class TargetHealth : MonoBehaviour
             healthSlider.wholeNumbers = true;
         }
         UpdateHealthBar();
-    }
-
-    private void OnEnable()
-    {
-        currentHealth = initialHealth;
     }
 
     private void OnTriggerEnter(Collider other)
