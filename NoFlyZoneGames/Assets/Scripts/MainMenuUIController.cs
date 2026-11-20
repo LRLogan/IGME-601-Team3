@@ -46,7 +46,8 @@ public class MainMenuUIController : MonoBehaviour
             Debug.LogWarning("No GameManager found. Start from TitleScene.", this);
             return;
         }
-
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         GameManager.Instance.StartTutorial();
 
     }
@@ -58,6 +59,8 @@ public class MainMenuUIController : MonoBehaviour
             Debug.LogWarning("No GameManager found. Start from TitleScene.", this);
             return;
         }
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
         GameManager.Instance.StartGame();
     }
