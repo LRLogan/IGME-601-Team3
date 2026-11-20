@@ -6481,10 +6481,10 @@ MonoBehaviour:
   playerController: {fileID: 624823576}
   playerInteraction: {fileID: 624823573}
   playerInputs: {fileID: 624823574}
-  pauseLabel: {fileID: 0}
+  pauseLabel: {fileID: 378753700}
   waveCompleteLabel: {fileID: 0}
   gameOverLabel: {fileID: 0}
-  resumeButton: {fileID: 0}
+  resumeButton: {fileID: 728187037}
   hudCanvas: {fileID: 522873746}
 --- !u!114 &1722060732
 MonoBehaviour:

@@ -156,11 +156,17 @@ public class PauseMenuController : MonoBehaviour
 
     private void UpdateMenuUI()
     {
-        pauseLabel.SetActive(currentMenuState == MenuState.Paused);
-        waveCompleteLabel.SetActive(currentMenuState == MenuState.WaveComplete);
-        gameOverLabel.SetActive(currentMenuState == MenuState.GameOver);
+        if (pauseLabel != null)
+            pauseLabel.SetActive(currentMenuState == MenuState.Paused);
 
-        resumeButton.SetActive(currentMenuState == MenuState.Paused);
+        if (waveCompleteLabel != null)
+            waveCompleteLabel.SetActive(currentMenuState == MenuState.WaveComplete);
+
+        if (gameOverLabel != null)
+            gameOverLabel.SetActive(currentMenuState == MenuState.GameOver);
+
+        if (resumeButton != null)
+            resumeButton.SetActive(currentMenuState == MenuState.Paused);
     }
 
     private void SetCursorForMenu(bool menuOpen)
