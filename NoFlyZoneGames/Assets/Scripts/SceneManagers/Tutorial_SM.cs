@@ -52,6 +52,9 @@ public class Tutorial_SM : MonoBehaviour
 
         nextSpawnAttemptTime = Time.time + 0.5f;
         practiceMosquito = practiceSpawner.SpawnMosquito();
+
+        // for testing purposes, set the mosquito to idle so it doesn't fly away
+        // practiceMosquito.SetTask(MosquitoAgent.Task.Idle);
     }
     
     private void OnEnable()
