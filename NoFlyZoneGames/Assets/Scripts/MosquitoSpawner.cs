@@ -1,7 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.InputSystem;
 
 public class MosquitoSpawner : MonoBehaviour
 {
@@ -26,9 +25,12 @@ public class MosquitoSpawner : MonoBehaviour
     {
         CreateSpawnIndicator(spawnRadius);
 
-        LineRenderer rend = this.AddComponent<LineRenderer>();
-        guideLine = new GuideLine(this.transform.position, mosquitoManager.pointB.transform.position, Color.lightBlue, rend);
-        GuideLine.EnableGuideLine(guideLine);
+        if (mosquitoManager != null && mosquitoManager.pointB != null)
+        {
+            LineRenderer rend = this.AddComponent<LineRenderer>();
+            guideLine = new GuideLine(this.transform.position, mosquitoManager.pointB.transform.position, Color.lightBlue, rend);
+            GuideLine.EnableGuideLine(guideLine);
+        }
     }
 
     private void OnDestroy()
@@ -38,9 +40,9 @@ public class MosquitoSpawner : MonoBehaviour
 
     public MosquitoAgent SpawnMosquito()
     {
-        if (mosquitoManager == null)
+        if (mosquitoManager == null || mosquitoManager.pointB == null)
         {
-            Debug.LogWarning("Mosquito manager is not assigned.", this);
+            Debug.LogWarning("Assign a mosquito manager and target before spawning.", this);
             return null;
         }
 
@@ -161,15 +163,4 @@ public class MosquitoSpawner : MonoBehaviour
         spawnAreaIndicator = null;
     }
 
-    #if UNITY_EDITOR
-    // Temporary test hook (Editor only)
-    private void Update()
-    {
-        if (Keyboard.current != null &&
-            Keyboard.current.spaceKey.wasPressedThisFrame)
-        {
-            SpawnMosquito();
-        }
-    }
-    #endif
 }

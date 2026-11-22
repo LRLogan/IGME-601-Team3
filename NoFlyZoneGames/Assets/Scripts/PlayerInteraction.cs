@@ -57,6 +57,8 @@ public class PlayerInteraction : MonoBehaviour
 
     // The item currently being held by the player.
     private PickupItem heldItem;
+    private Vector3 heldItemStartPosition;
+    private Quaternion heldItemStartRotation;
 
     // The held item's solid (non-trigger) collider, cached when it is picked up.
     private Collider heldCollider;
@@ -289,6 +291,8 @@ public class PlayerInteraction : MonoBehaviour
 
         // Cache on pickup
         heldItem = item;
+        heldItemStartPosition = item.transform.position;
+        heldItemStartRotation = item.transform.rotation;
         heldCollider = GetSolidCollider(heldItem.gameObject);
 
         // The hover indicator is replaced by the placement one created below.
@@ -305,8 +309,20 @@ public class PlayerInteraction : MonoBehaviour
     }
 
     /// <summary>
-    /// Creates a visual copy of the currently held item for placement.
+    /// Returns a held item to its pickup position before leaving a tutorial room.
     /// </summary>
+    public void ReturnHeldItem()
+    {
+        if (heldItem != null)
+            heldItem.Place(heldItemStartPosition, heldItemStartRotation);
+        heldItem = null;
+        heldCollider = null;
+        hoveredItem = null;
+        canPlace = false;
+        DestroyPlacementPreview();
+    }
+
+    /// <summary>Creates a visual copy of the currently held item for placement.</summary>
     private void CreatePlacementPreview()
     {
         DestroyPlacementPreview();
