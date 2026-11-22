@@ -1,6 +1,6 @@
+using System;
 using UnityEngine;
 
-// temporary health component for zapper testing
 public class MosquitoHealth : MonoBehaviour
 {
     [SerializeField]
@@ -10,12 +10,7 @@ public class MosquitoHealth : MonoBehaviour
     private MosquitoManager mosquitoManager;
 
     public bool IsDead => health <= 0f;
-    
-    void Start()
-    {
-        if (mosquitoManager == null) 
-            mosquitoManager = FindFirstObjectByType<MosquitoManager>();
-    }
+    public event Action<MosquitoHealth> OnDied;
 
     private void Awake()
     {
@@ -34,7 +29,7 @@ public class MosquitoHealth : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        if (IsDead)
+        if (IsDead || !gameObject.activeInHierarchy)
             return;
         
         health -= damage;
@@ -42,7 +37,18 @@ public class MosquitoHealth : MonoBehaviour
         Debug.Log($"Mosquito took {damage} damage. Health: {health}");
 
         if (health <= 0)
-            mosquitoManager.DespawnMosquito
-                (gameObject.GetComponent<MosquitoAgent>());
+        {
+            Despawn();
+            OnDied?.Invoke(this);
+        }
+    }
+
+    /// <summary>Returns a spawned mosquito to its owner, or disables a placed mosquito.</summary>
+    public void Despawn()
+    {
+        MosquitoAgent mosquito = GetComponent<MosquitoAgent>();
+        if (mosquitoManager != null && mosquitoManager.TryDespawnMosquito(mosquito)) return;
+        if (mosquito != null) mosquito.ResetAgent();
+        gameObject.SetActive(false);
     }
 }

@@ -20,9 +20,10 @@ public class Zapper : MonoBehaviour, IItemEffect
         {
             return;
         }
-        if (other.CompareTag("Mosquito"))
+        MosquitoHealth mosquitoHealth = other.GetComponentInParent<MosquitoHealth>();
+        if (mosquitoHealth != null && mosquitoHealth.CompareTag("Mosquito"))
         {
-            health = other.GetComponent<MosquitoHealth>();
+            health = mosquitoHealth;
             
             //Start coroutine
             if(zapTime == null)
@@ -35,13 +36,22 @@ public class Zapper : MonoBehaviour, IItemEffect
     private void OnTriggerExit(Collider other)
     {
         //Good for our purposes now BUT will pose a problem with multiple mosquitoes
-        if(other.CompareTag("Mosquito"))
+        if (other.GetComponentInParent<MosquitoHealth>() == health)
         {
-            //make sure to set the coroutine to null to prevent multiple threads
-            if (zapTime != null)
-                StopCoroutine(zapTime);
-                zapTime = null;
+            StopZapping();
         }
+    }
+
+    private void OnDisable()
+    {
+        StopZapping();
+    }
+
+    private void StopZapping()
+    {
+        if (zapTime != null) StopCoroutine(zapTime);
+        zapTime = null;
+        health = null;
     }
 
     public IEnumerator ApplyZap(float cool)
@@ -84,6 +94,7 @@ public class Zapper : MonoBehaviour, IItemEffect
         }
 
         effectActive = active;
+        if (!active) StopZapping();
     }
 
 }

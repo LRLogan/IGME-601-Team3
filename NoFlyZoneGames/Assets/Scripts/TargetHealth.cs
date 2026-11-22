@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections.Generic;
+using System;
 using UnityEngine.UI;
 
 public class TargetHealth : MonoBehaviour
@@ -9,7 +9,7 @@ public class TargetHealth : MonoBehaviour
     [SerializeField] private MosquitoManager mManager;
     [SerializeField] private Slider healthSlider;
     [SerializeField] private FinalLvl_SM sceneManager;
-    private HashSet<MosquitoAgent> arrivedMosquito = new HashSet<MosquitoAgent>();
+    public event Action<TargetHealth, MosquitoAgent> OnMosquitoReachedTarget;
 
     private int currentHealth;
 
@@ -29,13 +29,8 @@ public class TargetHealth : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Mosquito"))
-        {
-            return;
-        }
-
-        MosquitoAgent mosquito = other.GetComponent<MosquitoAgent>();
-        if (mosquito == null)
+        MosquitoAgent mosquito = other.GetComponentInParent<MosquitoAgent>();
+        if (mosquito == null || !mosquito.CompareTag("Mosquito"))
         {
             return;
         }
@@ -51,6 +46,8 @@ public class TargetHealth : MonoBehaviour
         {
             return;
         }
+
+        OnMosquitoReachedTarget?.Invoke(this, mosquito);
 
         currentHealth = Mathf.Clamp(currentHealth - damagePerHit, 0, maxHealth);
         UpdateHealthBar();
