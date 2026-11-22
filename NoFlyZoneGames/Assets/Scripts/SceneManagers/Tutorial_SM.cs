@@ -137,7 +137,7 @@ public class Tutorial_SM : MonoBehaviour
     private void OnTargetReached(TargetHealth target, MosquitoAgent mosquito)
     {
         if (roomComplete || mosquito != activeMosquito || target != targets[currentStageIndex]) return;
-        RetryRoom("The mosquito reached the target. Try again! Another mosquito is spawning.");
+        RetryRoom("Attempt failed: the mosquito reached the target. Try again! Another mosquito is spawning.");
     }
 
     private void OnMosquitoDied(MosquitoHealth health)
@@ -213,6 +213,8 @@ public class Tutorial_SM : MonoBehaviour
     {
         if (!roomComplete || currentStageIndex != stageSpawnPoints.Length - 1) return;
         Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         SceneManager.LoadScene(MainLevelSceneIndex);
     }
 
@@ -220,6 +222,8 @@ public class Tutorial_SM : MonoBehaviour
     {
         if (!roomComplete || currentStageIndex != stageSpawnPoints.Length - 1) return;
         Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         SceneManager.LoadScene(mainMenuSceneName);
     }
 }

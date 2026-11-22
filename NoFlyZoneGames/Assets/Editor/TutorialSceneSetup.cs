@@ -17,7 +17,7 @@ public static class TutorialSceneSetup
     private const string scenePath = "Assets/Scenes/Official levels/Tutorial Level.unity";
     private static readonly Color panelColor = new Color(0.06f, 0.09f, 0.12f, 0.94f);
 
-    [MenuItem("Tools/Tutorial/Configure Scene %#F8")]
+    [MenuItem("Tools/Tutorial/Configure Scene")]
     public static void Configure()
     {
         if (EditorApplication.isPlaying || SceneManager.GetActiveScene().path != scenePath)
@@ -25,12 +25,17 @@ public static class TutorialSceneSetup
 
         Tutorial_SM tutorial = UnityEngine.Object.FindFirstObjectByType<Tutorial_SM>();
         SerializedObject setup = new SerializedObject(tutorial);
+        if (setup.FindProperty("completionPanel").objectReferenceValue != null)
+            throw new InvalidOperationException("This scene is already configured. Use Run Flow Checks to validate it.");
         var roots = SceneManager.GetActiveScene().GetRootGameObjects();
         Transform[] rooms = Enumerable.Range(1, 4).Select(i => roots.Single(r => r.name == "Room" + i).transform).ToArray();
         MosquitoAgent first = rooms[0].GetComponentInChildren<MosquitoAgent>(true);
         Require(first != null, "Room 1 needs its placed mosquito.");
         foreach (MosquitoAgent mosquito in UnityEngine.Object.FindObjectsByType<MosquitoAgent>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
             mosquito.gameObject.SetActive(mosquito == first);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(mosquito.gameObject);
+        }
         setup.FindProperty("firstRoomMosquito").objectReferenceValue = first;
 
         SerializedProperty targets = setup.FindProperty("targets");
@@ -45,15 +50,22 @@ public static class TutorialSceneSetup
             managerSetup.FindProperty("initialPoolSize").intValue = i == 0 ? 0 : 1;
             managerSetup.ApplyModifiedPropertiesWithoutUndo();
             spawner.gameObject.SetActive(i != 0);
-            TargetHealth target = manager.pointB != null ? manager.pointB.GetComponentInChildren<TargetHealth>(true) : null;
+            PrefabUtility.RecordPrefabInstancePropertyModifications(spawner.gameObject);
+            TargetHealth target = manager.pointB != null ? manager.pointB.GetComponentInParent<TargetHealth>() : null;
             if (i > 0) Require(target != null, "A spawned room needs a target with TargetHealth.");
             targets.GetArrayElementAtIndex(i).objectReferenceValue = target;
             if (target != null) SetReference(target, "mManager", manager);
             foreach (Window window in rooms[i].GetComponentsInChildren<Window>(true))
             {
                 Rigidbody body = window.GetComponent<Rigidbody>();
-                if (body != null) { body.isKinematic = true; body.useGravity = false; }
+                if (body != null)
+                {
+                    body.isKinematic = true;
+                    body.useGravity = false;
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(body);
+                }
             }
+            setup.FindProperty("windows").GetArrayElementAtIndex(i).objectReferenceValue = rooms[i].GetComponentInChildren<Window>(true);
         }
         foreach (MosquitoManager manager in roots.SelectMany(r => r.GetComponents<MosquitoManager>()))
             if (manager.pointB == null) manager.gameObject.SetActive(false);
@@ -90,6 +102,8 @@ public static class TutorialSceneSetup
             label.fontSizeMin = 20;
             label.fontSizeMax = 28;
             label.raycastTarget = false;
+            label.color = Color.white;
+            buttonObject.GetComponent<Image>().color = new Color(0.12f, 0.38f, 0.44f, 1f);
             buttonObject.SetActive(false);
         }
 
