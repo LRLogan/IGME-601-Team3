@@ -112,9 +112,11 @@ public class PauseMenuController : MonoBehaviour
     public void RestartLevel()
     {
         Time.timeScale = 1f;
-
+        SetCursorForMenu(false);
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.buildIndex);
+
+
     }
 
     public void ReturnToMainMenu()
