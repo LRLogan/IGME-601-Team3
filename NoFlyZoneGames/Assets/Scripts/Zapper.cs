@@ -10,9 +10,18 @@ public class Zapper : MonoBehaviour, IItemEffect
     [SerializeField]
     private float cooldown;
 
+    [SerializeField]
+    private TrapAudioFeedback audioFeedback;
+
     private MosquitoHealth health;
 
     private Coroutine zapTime;
+
+    private void Awake()
+    {
+        if (audioFeedback == null)
+            audioFeedback = GetComponent<TrapAudioFeedback>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -60,8 +69,12 @@ public class Zapper : MonoBehaviour, IItemEffect
 
         while (target != null &&
             target.gameObject.activeInHierarchy &&
-            !target.IsDead)
+            !target.IsDead &&
+            effectActive)
         {
+            if (audioFeedback != null)
+                audioFeedback.PlayOneShot();
+
             target.TakeDamage(damage);
 
             if (target.IsDead ||

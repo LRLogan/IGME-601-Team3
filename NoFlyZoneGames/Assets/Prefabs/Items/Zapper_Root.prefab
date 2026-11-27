@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 3455548001670346364}
   - component: {fileID: 6149771278420050876}
   - component: {fileID: 2291131522179732136}
+  - component: {fileID: 5487896324322243726}
   m_Layer: 0
   m_Name: Zapper_Root
   m_TagString: Untagged
@@ -123,6 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Zapper
   damage: 25
   cooldown: 0.5
+  audioFeedback: {fileID: 5487896324322243726}
 --- !u!114 &6149771278420050876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,6 +161,29 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.1735311, y: 0.31465796, z: 0.1833331}
   m_Center: {x: -0.002, y: 0.155, z: -0.0067}
+--- !u!114 &5487896324322243726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9052811155972936651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88113e72c13579747b36f737d34ea938, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrapAudioFeedback
+  continuousClip: {fileID: 0}
+  continuousVolume: 0.3
+  fadeDuration: 0.25
+  continuousMinDistance: 1
+  continuousMaxDistance: 10
+  continuousPriority: 100
+  continuousSource: {fileID: 0}
+  oneShotClip: {fileID: 8300000, guid: 2b2de442e4ea82f4aad65a823c86d893, type: 3}
+  oneShotVolume: 0.7
+  oneShotPriority: 64
+  minimumOneShotInterval: 0.05
 --- !u!1001 &2193203390485690250
 PrefabInstance:
   m_ObjectHideFlags: 0
