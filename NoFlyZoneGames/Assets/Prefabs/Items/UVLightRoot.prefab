@@ -234,6 +234,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5037277085531429993, guid: 7ae4a5c03cc9dee4cb8e27fb853d5b4a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1340195756422853297}
+    - targetCorrespondingSourceObject: {fileID: 5037277085531429993, guid: 7ae4a5c03cc9dee4cb8e27fb853d5b4a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6684896114894454540}
   m_SourcePrefab: {fileID: 100100000, guid: 7ae4a5c03cc9dee4cb8e27fb853d5b4a, type: 3}
 --- !u!1 &4384746189595100626 stripped
 GameObject:
@@ -324,6 +327,7 @@ MonoBehaviour:
   attractionPoint: {fileID: 402444831807258961}
   attractionDuration: 3
   releasePointRad: 0.5
+  audioFeedback: {fileID: 6684896114894454540}
 --- !u!114 &1340195756422853297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -339,6 +343,29 @@ MonoBehaviour:
   rb: {fileID: 8330594938597101939}
   placementRadius: 0.25
   aoeCollider: {fileID: 8662397731822034670}
+--- !u!114 &6684896114894454540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4384746189595100626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88113e72c13579747b36f737d34ea938, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrapAudioFeedback
+  continuousClip: {fileID: 8300000, guid: 8692950b2f596804db22caa5b98cb120, type: 3}
+  continuousVolume: 0.15
+  fadeDuration: 0.4
+  continuousMinDistance: 1
+  continuousMaxDistance: 10
+  continuousPriority: 110
+  continuousSource: {fileID: 0}
+  oneShotClip: {fileID: 0}
+  oneShotVolume: 0.7
+  oneShotPriority: 64
+  minimumOneShotInterval: 0.05
 --- !u!4 &5277758903146387159 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3463235669188579180, guid: 7ae4a5c03cc9dee4cb8e27fb853d5b4a, type: 3}
